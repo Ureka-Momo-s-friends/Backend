@@ -10,7 +10,6 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class PetService {
 
@@ -24,6 +23,13 @@ public class PetService {
 
     public List<PetDTO> findAll() {
         final List<Pet> pets = petRepository.findAll(Sort.by("id"));
+        return pets.stream()
+                .map(pet -> mapToDTO(pet, new PetDTO()))
+                .toList();
+    }
+
+    public List<PetDTO> getPetsByMemberId(Long memberId) {
+        List<Pet> pets = petRepository.findByMemberId(memberId);
         return pets.stream()
                 .map(pet -> mapToDTO(pet, new PetDTO()))
                 .toList();

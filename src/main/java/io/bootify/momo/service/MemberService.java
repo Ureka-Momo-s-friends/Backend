@@ -19,7 +19,6 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class MemberService {
 
@@ -31,9 +30,9 @@ public class MemberService {
     private final AddressRepository addressRepository;
 
     public MemberService(final MemberRepository memberRepository, final PetRepository petRepository,
-            final CartRepository cartRepository, final OrderRepository orderRepository,
-            final StrayCatRepository strayCatRepository,
-            final AddressRepository addressRepository) {
+                         final CartRepository cartRepository, final OrderRepository orderRepository,
+                         final StrayCatRepository strayCatRepository,
+                         final AddressRepository addressRepository) {
         this.memberRepository = memberRepository;
         this.petRepository = petRepository;
         this.cartRepository = cartRepository;
@@ -55,15 +54,25 @@ public class MemberService {
                 .orElseThrow(NotFoundException::new);
     }
 
+
+    public MemberDTO findByGoogleId(String googleId) {
+        return memberRepository.findByGoogleId(googleId)
+                .map(member -> mapToDTO(member, new MemberDTO()))
+                .orElse(null);
+    }
+
+
     public Long create(final MemberDTO memberDTO) {
         final Member member = new Member();
         mapToEntity(memberDTO, member);
         return memberRepository.save(member).getId();
     }
 
+    // 업데이트 메서드 추가 또는 수정
     public void update(final Long id, final MemberDTO memberDTO) {
         final Member member = memberRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
+        // 여기에 모든 필드가 올바르게 설정되고 있는지 확인
         mapToEntity(memberDTO, member);
         memberRepository.save(member);
     }
@@ -76,9 +85,11 @@ public class MemberService {
         memberDTO.setId(member.getId());
         memberDTO.setUsername(member.getUsername());
         memberDTO.setContact(member.getContact());
+        memberDTO.setGoogleId(member.getGoogleId()); // Google ID 매핑 추가
         return memberDTO;
     }
 
+    // DTO를 Entity로 매핑하는 메서드
     private Member mapToEntity(final MemberDTO memberDTO, final Member member) {
         member.setUsername(memberDTO.getUsername());
         member.setContact(memberDTO.getContact());

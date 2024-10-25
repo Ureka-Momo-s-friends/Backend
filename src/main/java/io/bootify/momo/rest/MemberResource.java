@@ -32,15 +32,25 @@ public class MemberResource {
         return ResponseEntity.ok(memberService.get(id));
     }
 
-    @PostMapping
-    public ResponseEntity<Long> createMember(@RequestBody @Valid final MemberDTO memberDTO) {
-        final Long createdId = memberService.create(memberDTO);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
+    @PostMapping("/google-login")
+    public ResponseEntity<MemberDTO> googleLogin(@RequestBody @Valid final MemberDTO memberDTO) {
+        // Google ID를 기준으로 기존 사용자가 있는지 확인
+        MemberDTO existingMember = memberService.findByGoogleId(memberDTO.getGoogleId());
+
+        if (existingMember == null) {
+            // 기존 사용자가 없다면 새로 생성
+            final Long createdId = memberService.create(memberDTO);
+            MemberDTO newMember = memberService.get(createdId); // 생성된 멤버 정보 가져오기
+            return new ResponseEntity<>(newMember, HttpStatus.CREATED);
+        } else {
+            // 기존 사용자가 있다면 기존 사용자 정보 반환
+            return new ResponseEntity<>(existingMember, HttpStatus.OK);
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateMember(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final MemberDTO memberDTO) {
+                                             @RequestBody @Valid final MemberDTO memberDTO) {
         memberService.update(id, memberDTO);
         return ResponseEntity.ok(id);
     }

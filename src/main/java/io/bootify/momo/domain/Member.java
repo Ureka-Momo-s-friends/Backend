@@ -10,7 +10,6 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Entity
 @Getter
 @Setter
@@ -27,6 +26,9 @@ public class Member {
     @Column(nullable = false, length = 11)
     private String contact;
 
+    @Column(nullable = false, length = 50, unique = true)
+    private String googleId;
+
     @OneToMany(mappedBy = "member")
     private Set<Pet> memberPets;
 
@@ -41,5 +43,4 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private Set<Address> memberAddresses;
-
 }

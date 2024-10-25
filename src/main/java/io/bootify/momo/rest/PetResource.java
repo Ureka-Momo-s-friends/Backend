@@ -35,9 +35,11 @@ public class PetResource {
         return ResponseEntity.ok(petService.findAll());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<PetDTO> getPet(@PathVariable(name = "id") final Long id) {
-        return ResponseEntity.ok(petService.get(id));
+    // 특정 사용자의 고양이 목록 가져오기
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity<List<PetDTO>> getPetsByMemberId(@PathVariable Long memberId) {
+        List<PetDTO> pets = petService.getPetsByMemberId(memberId);
+        return ResponseEntity.ok(pets);
     }
 
     @PostMapping
