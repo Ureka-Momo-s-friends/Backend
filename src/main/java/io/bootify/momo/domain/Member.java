@@ -1,11 +1,7 @@
 package io.bootify.momo.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,21 +22,21 @@ public class Member {
     @Column(nullable = false, length = 11)
     private String contact;
 
-    @Column(nullable = false, length = 50, unique = true)
-    private String googleId;
+    @Column(nullable = false, unique = true) // Google ID를 유일하게 설정
+    private String googleId; // 추가된 필드
 
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Pet> memberPets;
 
-    @OneToMany(mappedBy = "member")
-    private Set<Cart> memberCarts;
 
-    @OneToMany(mappedBy = "member")
-    private Set<Order> memberOrders;
+    // Other fields and relationships
 
-    @OneToMany(mappedBy = "member")
-    private Set<StrayCat> memberStrayCats;
+    // Google ID에 대한 getter 및 setter 추가
+    public String getGoogleId() {
+        return googleId;
+    }
 
-    @OneToMany(mappedBy = "member")
-    private Set<Address> memberAddresses;
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
+    }
 }

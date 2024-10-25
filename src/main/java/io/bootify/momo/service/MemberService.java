@@ -78,8 +78,19 @@ public class MemberService {
     }
 
     public void delete(final Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Member not found"));
+
+        // Check if the member has associated pets (or any other related data)
+        if (!member.getMemberPets().isEmpty()) {
+            // Decide if you want to throw an exception or just disassociate pets
+            throw new IllegalStateException("Member has associated pets");
+        }
+
+        // If no associated data, delete member
         memberRepository.deleteById(id);
     }
+
 
     private MemberDTO mapToDTO(final Member member, final MemberDTO memberDTO) {
         memberDTO.setId(member.getId());

@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
-
 @Entity
 @Getter
 @Setter
@@ -36,7 +35,6 @@ public class Pet {
     private Boolean gender;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = true) // 변경된 부분: nullable = true
     private Member member;
-
 }
