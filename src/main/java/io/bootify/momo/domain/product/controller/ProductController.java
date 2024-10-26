@@ -6,6 +6,8 @@ import io.bootify.momo.util.ReferencedException;
 import io.bootify.momo.util.ReferencedWarning;
 import jakarta.validation.Valid;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/api/products", produces = MediaType.APPLICATION_JSON_VALUE)
-public class ProductResource {
+@RequiredArgsConstructor
+public class ProductController {
 
     private final ProductService productService;
-
-    public ProductResource(final ProductService productService) {
-        this.productService = productService;
-    }
 
     @GetMapping
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
@@ -54,10 +53,6 @@ public class ProductResource {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable(name = "id") final Long id) {
-        final ReferencedWarning referencedWarning = productService.getReferencedWarning(id);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
-        }
         productService.delete(id);
         return ResponseEntity.noContent().build();
     }

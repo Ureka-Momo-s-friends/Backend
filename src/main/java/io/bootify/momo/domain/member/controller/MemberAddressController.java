@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 
 @RestController
@@ -25,14 +26,14 @@ public class MemberAddressController {
 
     private final MemberAddressService addressService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<MemberAddressResponse> getAddress(@PathVariable(name = "id") final Long id) {
-        return ResponseEntity.ok(addressService.getAddress(id));
+    @GetMapping
+    public ResponseEntity<List<MemberAddressResponse>> getAddress(@RequestBody final Long memberId) {
+        return ResponseEntity.ok(addressService.getAddress(memberId));
     }
 
     @PostMapping
-    public ResponseEntity<Long> createAddress(@RequestBody @Valid final MemberAddressRequest request) {
-        final Long createdId = addressService.create(request);
+    public ResponseEntity<Long> createAddress(@RequestBody @Valid final MemberAddressRequest request, @RequestBody final Long memberId) {
+        final Long createdId = addressService.create(request, memberId);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
@@ -45,10 +46,6 @@ public class MemberAddressController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAddress(@PathVariable(name = "id") final Long id) {
-        final ReferencedWarning referencedWarning = addressService.getReferencedWarning(id);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
-        }
         addressService.delete(id);
         return ResponseEntity.noContent().build();
     }

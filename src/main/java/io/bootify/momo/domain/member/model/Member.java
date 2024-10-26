@@ -1,8 +1,8 @@
 package io.bootify.momo.domain.member.model;
 
 import io.bootify.momo.domain.order.model.Order;
-import io.bootify.momo.domain.pet.model.Pet;
-import io.bootify.momo.domain.pet.model.StrayCat;
+import io.bootify.momo.domain.cat.model.Pet;
+import io.bootify.momo.domain.cat.model.StrayCat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

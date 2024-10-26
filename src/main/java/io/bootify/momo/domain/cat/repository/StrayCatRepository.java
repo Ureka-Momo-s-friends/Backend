@@ -1,7 +1,7 @@
-package io.bootify.momo.domain.pet.repository;
+package io.bootify.momo.domain.cat.repository;
 
 import io.bootify.momo.domain.member.model.Member;
-import io.bootify.momo.domain.pet.model.StrayCat;
+import io.bootify.momo.domain.cat.model.StrayCat;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

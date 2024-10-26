@@ -1,9 +1,12 @@
-package io.bootify.momo.domain.pet.controller;
+package io.bootify.momo.domain.cat.controller;
 
+import io.bootify.momo.domain.cat.dto.response.StrayCatResponse;
 import io.bootify.momo.model.StrayCatDTO;
-import io.bootify.momo.domain.pet.service.StrayCatService;
+import io.bootify.momo.domain.cat.service.StrayCatService;
 import jakarta.validation.Valid;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,22 +21,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/api/strayCats", produces = MediaType.APPLICATION_JSON_VALUE)
 public class StrayCatController {
 
     private final StrayCatService strayCatService;
 
-    public StrayCatController(final StrayCatService strayCatService) {
-        this.strayCatService = strayCatService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<StrayCatDTO>> getAllStrayCats() {
-        return ResponseEntity.ok(strayCatService.findAll());
-    }
-
+    // 회원의 모든 고양이 조회
     @GetMapping("/{id}")
-    public ResponseEntity<StrayCatDTO> getStrayCat(@PathVariable(name = "id") final Long id) {
+    public ResponseEntity<List<StrayCatResponse>> getAllStrayCats(@RequestBody final Long memberId) {
+        return ResponseEntity.ok(strayCatService.get(memberId));
+    }
+
+    // 특정 고양이 조회
+    @GetMapping
+    public ResponseEntity<StrayCatResponse> getStrayCat(@RequestBody final Long id) {
         return ResponseEntity.ok(strayCatService.get(id));
     }
 

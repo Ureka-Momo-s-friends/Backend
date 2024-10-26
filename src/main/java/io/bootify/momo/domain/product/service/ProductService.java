@@ -6,7 +6,6 @@ import io.bootify.momo.domain.order.model.OrderDetail;
 import io.bootify.momo.domain.product.model.Product;
 import io.bootify.momo.model.ProductDTO;
 import io.bootify.momo.domain.member.repository.CartRepository;
-import io.bootify.momo.domain.product.repository.CategoryRepository;
 import io.bootify.momo.domain.order.repository.OrderDetailRepository;
 import io.bootify.momo.domain.product.repository.ProductRepository;
 import io.bootify.momo.util.NotFoundException;

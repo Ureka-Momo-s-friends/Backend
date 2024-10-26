@@ -1,4 +1,4 @@
-package io.bootify.momo.domain.pet.model;
+package io.bootify.momo.domain.cat.model;
 
 import io.bootify.momo.domain.member.model.Member;
 import jakarta.persistence.Column;
@@ -40,4 +40,11 @@ public class Pet {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    public Pet(String petName, LocalDate birthDate, String profileImgUrl, Boolean gender, Member member) {
+        this.petName = petName;
+        this.birthDate = birthDate;
+        this.profileImgUrl = profileImgUrl;
+        this.gender = gender;
+        this.member = member;
+    }
 }

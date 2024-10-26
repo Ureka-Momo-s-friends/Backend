@@ -1,7 +1,7 @@
-package io.bootify.momo.domain.pet.controller;
+package io.bootify.momo.domain.cat.controller;
 
 import io.bootify.momo.model.PetDTO;
-import io.bootify.momo.domain.pet.service.PetService;
+import io.bootify.momo.domain.cat.service.PetService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,5 @@
 package io.bootify.momo.domain.member.controller;
 
-import io.bootify.momo.model.MemberDTO;
 import io.bootify.momo.domain.member.service.MemberService;
 import io.bootify.momo.util.ReferencedException;
 import io.bootify.momo.util.ReferencedWarning;
@@ -18,10 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
-
-    public MemberResource(final MemberService memberService) {
-        this.memberService = memberService;
-    }
 
     @GetMapping
     public ResponseEntity<List<MemberDTO>> getAllMembers() {

@@ -1,21 +1,21 @@
 package io.bootify.momo.domain.member.model;
 
 import io.bootify.momo.domain.product.model.Product;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 
 @Entity
 @Getter
-@Setter
+@Table(uniqueConstraints = {
+        @UniqueConstraint(
+                name = "uk_cart_member_product",  // unique key 이름
+                columnNames = {"member_id", "product_id"}  // 유니크 제약조건을 걸 컬럼들
+        )
+})
+@NoArgsConstructor
 public class Cart {
 
     @Id
@@ -24,6 +24,7 @@ public class Cart {
     private Long id;
 
     @Column(nullable = false)
+    @Min(value = 1, message = "수량은 1개 이상이어야 합니다")
     private Integer amount;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,5 +34,15 @@ public class Cart {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
+
+    public void updateAmount(Integer diff) {
+        this.amount += diff;
+    }
+
+    public Cart(Integer amount, Member member, Product product) {
+        this.amount = amount;
+        this.member = member;
+        this.product = product;
+    }
 
 }
