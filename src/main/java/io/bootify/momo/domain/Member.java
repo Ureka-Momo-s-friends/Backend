@@ -22,21 +22,10 @@ public class Member {
     @Column(nullable = false, length = 11)
     private String contact;
 
-    @Column(nullable = false, unique = true) // Google ID를 유일하게 설정
+    @Column(name = "google_id", length = 255, nullable = false) // Google ID를 유일하게 설정
     private String googleId; // 추가된 필드
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Pet> memberPets;
 
-
-    // Other fields and relationships
-
-    // Google ID에 대한 getter 및 setter 추가
-    public String getGoogleId() {
-        return googleId;
-    }
-
-    public void setGoogleId(String googleId) {
-        this.googleId = googleId;
-    }
 }

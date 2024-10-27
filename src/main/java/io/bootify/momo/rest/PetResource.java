@@ -1,6 +1,7 @@
 package io.bootify.momo.rest;
 
 import io.bootify.momo.model.PetDTO;
+import io.bootify.momo.service.FileStorageService;
 import io.bootify.momo.service.PetService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,18 +17,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000") // React 개발 서버 주소
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(value = "/api/pets", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PetResource {
 
     private final PetService petService;
+    private final FileStorageService fileStorageService;
 
     @Value("${file.upload-dir}")
     private String fileStorageLocation;
 
-    public PetResource(final PetService petService) {
+    public PetResource(final PetService petService, final FileStorageService fileStorageService) {
         this.petService = petService;
+        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping
@@ -35,7 +38,6 @@ public class PetResource {
         return ResponseEntity.ok(petService.findAll());
     }
 
-    // 특정 사용자의 고양이 목록 가져오기
     @GetMapping("/member/{memberId}")
     public ResponseEntity<List<PetDTO>> getPetsByMemberId(@PathVariable Long memberId) {
         List<PetDTO> pets = petService.getPetsByMemberId(memberId);
@@ -45,44 +47,45 @@ public class PetResource {
     @PostMapping
     public ResponseEntity<PetDTO> createPet(
             @RequestPart("petData") @Valid final PetDTO petDTO,
-            @RequestPart(value = "profileImgUrl", required = false) MultipartFile profileImgUrl)
-    {
-        // 먼저 고양이를 데이터베이스에 저장하여 ID를 생성합니다.
-        Long createdId = petService.create(petDTO);
+            @RequestPart(value = "profileImgUrl", required = false) MultipartFile profileImgUrl) {
+        try {
+            Long createdId = petService.create(petDTO);
 
-        // ID가 생성된 이후에 파일을 저장합니다.
-        if (profileImgUrl != null && !profileImgUrl.isEmpty()) {
-            String filePath = storeFile(profileImgUrl, createdId); // 생성된 ID 사용
-            petDTO.setProfileImgUrl(filePath);
-            petService.update(createdId, petDTO); // 파일 경로 업데이트
+            if (profileImgUrl != null && !profileImgUrl.isEmpty()) {
+                String filePath = fileStorageService.storeFile(profileImgUrl, createdId);
+                petDTO.setProfileImgUrl(filePath);
+                petService.update(createdId, petDTO);
+            }
+
+            PetDTO createdPet = petService.get(createdId);
+            return new ResponseEntity<>(createdPet, HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 오류 로그 추가
+            System.err.println("Error adding pet: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-
-        // 생성된 ID를 통해 새로 저장된 고양이 데이터를 가져옵니다.
-        PetDTO createdPet = petService.get(createdId);
-
-        // 새로 생성된 고양이 데이터를 반환합니다.
-        return new ResponseEntity<>(createdPet, HttpStatus.CREATED);
     }
-
 
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updatePet(@PathVariable(name = "id") final Long id,
                                           @RequestPart("petData") @Valid final PetDTO petDTO,
                                           @RequestPart(value = "profileImgUrl", required = false) MultipartFile profileImgUrl) {
-        if (profileImgUrl != null && !profileImgUrl.isEmpty()) {
-            String filePath = storeFile(profileImgUrl, petDTO.getId());
-            petDTO.setProfileImgUrl(filePath);
+        try {
+            if (profileImgUrl != null && !profileImgUrl.isEmpty()) {
+                // 파일 저장 로직 수정
+                String filePath = fileStorageService.storeFile(profileImgUrl, id);
+                petDTO.setProfileImgUrl(filePath);
+            }
 
-            // 파일 경로가 제대로 설정됐는지 확인
-            System.out.println("File path set to PetDTO: " + petDTO.getProfileImgUrl());
+            petService.update(id, petDTO);
+            return ResponseEntity.ok(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-
-        petService.update(id, petDTO);
-        return ResponseEntity.ok(id);
     }
-
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePet(@PathVariable(name = "id") final Long id) {
@@ -90,21 +93,17 @@ public class PetResource {
         return ResponseEntity.noContent().build();
     }
 
-    // 이미지 제공 엔드포인트 추가
     @GetMapping(value = "/uploads/{fileName}", produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<byte[]> getFile(@PathVariable String fileName) {
         try {
             Path filePath = Paths.get(fileStorageLocation).resolve(fileName).normalize();
             byte[] fileContent = Files.readAllBytes(filePath);
-            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(fileContent);
+            // 확장자에 따라 Content-Type을 설정 (예시: PNG, JPEG)
+            String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+            MediaType mediaType = fileExtension.equals("png") ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
+            return ResponseEntity.ok().contentType(mediaType).body(fileContent);
         } catch (IOException ex) {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    private String storeFile(MultipartFile file, Long petId) {
-        // Implement file storage logic here (similar to what was provided in FileStorageService)
-        // Use petId and other info to generate a unique filename, and return the stored file's path
-        return "";
     }
 }
