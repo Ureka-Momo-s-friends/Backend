@@ -4,11 +4,13 @@ import io.bootify.momo.domain.member.service.MemberService;
 import io.bootify.momo.util.ReferencedException;
 import io.bootify.momo.util.ReferencedWarning;
 import jakarta.validation.Valid;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000") // React 개발 서버 주소
 @RestController

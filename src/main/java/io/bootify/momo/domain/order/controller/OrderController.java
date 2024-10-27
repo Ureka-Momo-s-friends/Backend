@@ -28,20 +28,20 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDTO> getOrder(@PathVariable(name = "id") final Long id) {
-        return ResponseEntity.ok(orderService.get(id));
+    public ResponseEntity<List<OrderDetailResponse>> getAllOrderDetails(@PathVariable(name = "id") final Long id) {
+        return ResponseEntity.ok(orderService.findAllDetails(id));
     }
 
     @PostMapping
-    public ResponseEntity<Long> createOrder(@RequestBody @Valid final OrderDTO orderDTO) {
-        final Long createdId = orderService.create(orderDTO);
+    public ResponseEntity<Long> createOrder(@RequestBody @Valid final OrderRequest request, @RequestBody Long memberId) {
+        final Long createdId = orderService.create(request, memberId);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateOrder(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid final OrderDTO orderDTO) {
-        orderService.update(id, orderDTO);
+                                            @RequestBody @Valid OrderStatus orderStatus) {
+        orderService.update(id, orderStatus);
         return ResponseEntity.ok(id);
     }
 

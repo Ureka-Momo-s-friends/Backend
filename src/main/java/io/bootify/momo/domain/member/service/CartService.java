@@ -30,7 +30,7 @@ public class CartService {
     private final ProductRepository productRepository;
 
     public List<CartResponse> get(final Long memberId) {
-       return cartRepository.findByMemberId(memberId)
+       return cartRepository.findAllByMemberId(memberId)
                .stream()
                .map(CartResponse::of)
                .toList();
