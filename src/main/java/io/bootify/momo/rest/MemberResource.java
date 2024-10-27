@@ -1,15 +1,22 @@
 package io.bootify.momo.rest;
 
 import io.bootify.momo.model.MemberDTO;
+import io.bootify.momo.service.FileStorageService;
 import io.bootify.momo.service.MemberService;
 import io.bootify.momo.util.ReferencedException;
 import io.bootify.momo.util.ReferencedWarning;
 import jakarta.validation.Valid;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @CrossOrigin(origins = "http://localhost:3000") // React 개발 서버 주소
 @RestController
@@ -17,9 +24,11 @@ import org.springframework.web.bind.annotation.*;
 public class MemberResource {
 
     private final MemberService memberService;
+    private final FileStorageService fileStorageService;
 
-    public MemberResource(final MemberService memberService) {
+    public MemberResource(final MemberService memberService, FileStorageService fileStorageService) {
         this.memberService = memberService;
+        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping
@@ -50,7 +59,19 @@ public class MemberResource {
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateMember(@PathVariable(name = "id") final Long id,
-                                             @RequestBody @Valid final MemberDTO memberDTO) {
+                                             @RequestPart("userData") @Valid final MemberDTO memberDTO,
+                                             @RequestPart(value = "profileImgUrl", required = false) MultipartFile file) {
+        if (file != null && !file.isEmpty()) {
+            String fileName = id + "_" + file.getOriginalFilename();
+            Path targetLocation = Paths.get("C:/Users/rlgus/Desktop/upload/").resolve(fileName);
+            try {
+                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+                memberDTO.setProfileImgUrl("/uploads/" + fileName);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to store file.", e);
+            }
+        }
+
         memberService.update(id, memberDTO);
         return ResponseEntity.ok(id);
     }

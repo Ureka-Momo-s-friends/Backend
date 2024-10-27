@@ -52,7 +52,7 @@ public class PetResource {
             Long createdId = petService.create(petDTO);
 
             if (profileImgUrl != null && !profileImgUrl.isEmpty()) {
-                String filePath = fileStorageService.storeFile(profileImgUrl, createdId);
+                String filePath = fileStorageService.storePetFile(profileImgUrl, createdId);
                 petDTO.setProfileImgUrl(filePath);
                 petService.update(createdId, petDTO);
             }
@@ -75,7 +75,7 @@ public class PetResource {
         try {
             if (profileImgUrl != null && !profileImgUrl.isEmpty()) {
                 // 파일 저장 로직 수정
-                String filePath = fileStorageService.storeFile(profileImgUrl, id);
+                String filePath = fileStorageService.storePetFile(profileImgUrl, id);
                 petDTO.setProfileImgUrl(filePath);
             }
 

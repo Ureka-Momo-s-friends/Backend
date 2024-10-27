@@ -20,6 +20,9 @@ public class MemberDTO {
     private String contact;
 
     @NotNull
-    @Size(max = 50) // 구글 ID의 최대 길이 설정
+    @Size(max = 50)
     private String googleId;
+
+    private String profileImgUrl; // 새로운 필드 추가
 }
+

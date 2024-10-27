@@ -69,13 +69,20 @@ public class MemberService {
     }
 
     // 업데이트 메서드 추가 또는 수정
+    // MemberService.java
     public void update(final Long id, final MemberDTO memberDTO) {
         final Member member = memberRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
-        // 여기에 모든 필드가 올바르게 설정되고 있는지 확인
         mapToEntity(memberDTO, member);
+
+        // 프로필 이미지 경로가 존재하면 업데이트
+        if (memberDTO.getProfileImgUrl() != null) {
+            member.setProfileImgUrl(memberDTO.getProfileImgUrl());
+        }
+
         memberRepository.save(member);
     }
+
 
     public void delete(final Long id) {
         Member member = memberRepository.findById(id)
@@ -91,21 +98,24 @@ public class MemberService {
         memberRepository.deleteById(id);
     }
 
-
     private MemberDTO mapToDTO(final Member member, final MemberDTO memberDTO) {
         memberDTO.setId(member.getId());
         memberDTO.setUsername(member.getUsername());
         memberDTO.setContact(member.getContact());
-        memberDTO.setGoogleId(member.getGoogleId()); // Google ID 매핑 추가
+        memberDTO.setGoogleId(member.getGoogleId());
+        memberDTO.setProfileImgUrl(member.getProfileImgUrl()); // 프로필 이미지 URL 추가
         return memberDTO;
     }
 
-    // DTO를 Entity로 매핑하는 메서드
     private Member mapToEntity(final MemberDTO memberDTO, final Member member) {
         member.setUsername(memberDTO.getUsername());
         member.setContact(memberDTO.getContact());
+        member.setGoogleId(memberDTO.getGoogleId()); // 필드 추가
+        member.setProfileImgUrl(memberDTO.getProfileImgUrl()); // 프로필 이미지 URL 추가
         return member;
     }
+
+
 
     public ReferencedWarning getReferencedWarning(final Long id) {
         final ReferencedWarning referencedWarning = new ReferencedWarning();

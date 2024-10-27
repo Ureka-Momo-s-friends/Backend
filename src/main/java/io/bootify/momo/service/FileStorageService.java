@@ -16,17 +16,26 @@ public class FileStorageService {
     @Value("${file.upload-dir}")
     private String fileStorageLocation;
 
-    public String storeFile(MultipartFile file, Long id) {
-        String fileName = id + "_" + file.getOriginalFilename();
+    // 사용자 프로필 이미지 저장
+    public String storeUserFile(MultipartFile file, Long id) {
+        String fileName = "user_" + id + "_" + file.getOriginalFilename();
+        return storeFile(file, fileName, "user");
+    }
 
+    // 고양이 프로필 이미지 저장
+    public String storePetFile(MultipartFile file, Long id) {
+        String fileName = "pet_" + id + "_" + file.getOriginalFilename();
+        return storeFile(file, fileName, "pet");
+    }
+
+    private String storeFile(MultipartFile file, String fileName, String folder) {
         try {
-            Path targetLocation = Paths.get(fileStorageLocation).resolve(fileName);
+            Path targetLocation = Paths.get(fileStorageLocation).resolve(folder).resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-            return "/uploads/" + fileName; // 반환되는 경로가 클라이언트가 접근 가능한 경로여야 함
+            return "/uploads/" + folder + "/" + fileName;
         } catch (IOException ex) {
-            ex.printStackTrace();
             throw new RuntimeException("Failed to store file.", ex);
         }
     }
 }
+

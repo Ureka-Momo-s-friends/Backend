@@ -22,10 +22,13 @@ public class Member {
     @Column(nullable = false, length = 11)
     private String contact;
 
-    @Column(name = "google_id", length = 255, nullable = false) // Google ID를 유일하게 설정
-    private String googleId; // 추가된 필드
+    @Column(name = "google_id", length = 255, nullable = false)
+    private String googleId;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Pet> memberPets;
 
+    @Column(name = "profile_img_url", length = 255) // 새로운 필드 추가
+    private String profileImgUrl;
 }
+
