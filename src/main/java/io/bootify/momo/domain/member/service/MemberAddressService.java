@@ -10,6 +10,7 @@ import io.bootify.momo.util.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 
@@ -22,7 +23,7 @@ public class MemberAddressService {
     private final MemberRepository memberRepository;
 
     public List<MemberAddressResponse> getAddress(final Long memberId) {
-        return addressRepository.findByMemberId(memberId)
+        return addressRepository.findAllByMemberId(memberId)
                 .stream()
                 .map(MemberAddressResponse::of)
                 .toList();

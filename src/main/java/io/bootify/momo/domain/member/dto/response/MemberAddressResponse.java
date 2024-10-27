@@ -15,7 +15,7 @@ public record MemberAddressResponse(
         return new MemberAddressResponse(
                 memberAddress.getId(),
                 memberAddress.getZonecode(),
-                memberAddress.getAddresss(),
+                memberAddress.getAddress(),
                 memberAddress.getAddressDetail(),
                 memberAddress.getAddressName(),
                 memberAddress.getAddressContact()

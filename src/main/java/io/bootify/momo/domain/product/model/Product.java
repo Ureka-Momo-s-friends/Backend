@@ -1,10 +1,6 @@
 package io.bootify.momo.domain.product.model;
 
-import io.bootify.momo.domain.member.model.Cart;
-import io.bootify.momo.domain.order.model.OrderDetail;
 import jakarta.persistence.*;
-
-import java.util.Set;
 import lombok.Getter;
 
 
@@ -13,7 +9,7 @@ import lombok.Getter;
 public class Product {
 
     @Id
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, name = "product_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -30,15 +26,9 @@ public class Product {
     private String thumbnail;
 
     @Column(length = 500)
-    private String detail;
-
-    @OneToMany(mappedBy = "product")
-    private Set<Cart> productCarts;
+    private String detailImage;
 
     @Enumerated(EnumType.STRING)
     private Category category;
-
-    @OneToMany(mappedBy = "prodcut")
-    private Set<OrderDetail> prodcutOrderDetails;
 
 }

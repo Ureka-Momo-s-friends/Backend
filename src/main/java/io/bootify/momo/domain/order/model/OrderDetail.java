@@ -1,14 +1,7 @@
 package io.bootify.momo.domain.order.model;
 
 import io.bootify.momo.domain.product.model.Product;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +12,7 @@ import lombok.Setter;
 public class OrderDetail {
 
     @Id
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, name = "order_detail_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -31,7 +24,16 @@ public class OrderDetail {
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "prodcut_id", nullable = false)
-    private Product prodcut;
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
+    public OrderDetail(Integer amount, Order order, Product product) {
+        this.amount = amount;
+        this.order = order;
+        this.product = product;
+    }
+
+    public Integer calculatePrice() {
+        return amount * product.getPrice();
+    }
 }

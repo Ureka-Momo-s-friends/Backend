@@ -104,4 +104,10 @@ public class OrderService {
         return null;
     }
 
+    public List<OrderDetailResponse> findAllDetails(Long orderId) {
+        return orderDetailRepository.findAllByOrderId(orderId)
+                .stream()
+                .map(OrderDetailResponse::of)
+                .toList();
+    }
 }

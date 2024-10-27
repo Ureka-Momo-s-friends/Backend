@@ -22,7 +22,7 @@ import org.springframework.util.StringUtils;
 public class MemberAddress {
 
     @Id
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, name = "member_address_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -30,7 +30,7 @@ public class MemberAddress {
     private Integer zonecode;
 
     @Column(nullable = false, length = 100)
-    private String addresss;
+    private String address;
 
     @Column(length = 50)
     private String addressDetail;
@@ -48,7 +48,7 @@ public class MemberAddress {
 
     public MemberAddress(MemberAddressRequest request, Member member) {
         this.zonecode = request.zonecode();
-        this.addresss = request.addresss();
+        this.address = request.addresss();
         this.addressDetail = request.addressDetail();
         this.addressName = request.addressName();
         this.addressContact = request.addressContact();
@@ -60,7 +60,7 @@ public class MemberAddress {
             this.zonecode = request.zonecode();
         }
         if (StringUtils.hasText(request.addresss())) {
-            this.addresss = request.addresss();
+            this.address = request.addresss();
         }
         if (StringUtils.hasText(request.addressDetail())) {
             this.addressDetail = request.addressDetail();

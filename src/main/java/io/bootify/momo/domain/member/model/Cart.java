@@ -2,7 +2,6 @@ package io.bootify.momo.domain.member.model;
 
 import io.bootify.momo.domain.product.model.Product;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,12 +18,11 @@ import lombok.NoArgsConstructor;
 public class Cart {
 
     @Id
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, name = "cart_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    @Min(value = 1, message = "수량은 1개 이상이어야 합니다")
     private Integer amount;
 
     @ManyToOne(fetch = FetchType.LAZY)

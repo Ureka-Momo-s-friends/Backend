@@ -1,37 +1,30 @@
 package io.bootify.momo.domain.order.controller;
 
-import io.bootify.momo.model.OrderDTO;
+import io.bootify.momo.domain.order.dto.request.OrderRequest;
+import io.bootify.momo.domain.order.dto.response.OrderDetailResponse;
+import io.bootify.momo.domain.order.dto.response.OrdersResponse;
+import io.bootify.momo.domain.order.model.OrderStatus;
 import io.bootify.momo.domain.order.service.OrderService;
-import io.bootify.momo.util.ReferencedException;
-import io.bootify.momo.util.ReferencedWarning;
 import jakarta.validation.Valid;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
 @RequestMapping(value = "/api/orders", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
-    public OrderController(final OrderService orderService) {
-        this.orderService = orderService;
-    }
-
     @GetMapping
-    public ResponseEntity<List<OrderDTO>> getAllOrders() {
-        return ResponseEntity.ok(orderService.findAll());
+    public ResponseEntity<List<OrdersResponse>> getAllOrders(@RequestBody Long memberId) {
+        return ResponseEntity.ok(orderService.findAll(memberId));
     }
 
     @GetMapping("/{id}")
@@ -50,16 +43,6 @@ public class OrderController {
             @RequestBody @Valid final OrderDTO orderDTO) {
         orderService.update(id, orderDTO);
         return ResponseEntity.ok(id);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable(name = "id") final Long id) {
-        final ReferencedWarning referencedWarning = orderService.getReferencedWarning(id);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
-        }
-        orderService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 
 }

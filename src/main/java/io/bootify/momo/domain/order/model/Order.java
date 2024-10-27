@@ -1,53 +1,64 @@
 package io.bootify.momo.domain.order.model;
 
-import io.bootify.momo.domain.pay.model.Pay;
-import io.bootify.momo.domain.member.model.Address;
 import io.bootify.momo.domain.member.model.Member;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.time.OffsetDateTime;
-import java.util.Set;
+import io.bootify.momo.domain.pay.model.Pay;
+import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 
 @Entity
 @Table(name = "\"Order\"")
 @Getter
-@Setter
+@NoArgsConstructor
 public class Order {
 
     @Id
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false, name = "order_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private OffsetDateTime orderTime;
+    private LocalDateTime orderTime;
 
-    @Column(nullable = false, length = 10)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "address_id", nullable = false)
-    private Address address;
+    @Column(nullable = false)
+    private Integer zonecode;
 
-    @OneToMany(mappedBy = "order")
-    private Set<OrderDetail> orderOrderDetails;
+    @Column(nullable = false, length = 100)
+    private String address;
 
-    @OneToMany(mappedBy = "order")
-    private Set<Pay> orderPays;
+    @Column(length = 50)
+    private String addressDetail;
 
+    @OneToOne(mappedBy = "order")
+    private Pay pay;
+
+    private String orderName;
+
+    private String orderThumbnail;
+
+    public void updateStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public Order(String orderThumbnail, String orderName, Pay pay, String addressDetail, String address, Integer zonecode, Member member, OrderStatus status, LocalDateTime orderTime) {
+        this.orderThumbnail = orderThumbnail;
+        this.orderName = orderName;
+        this.pay = pay;
+        this.addressDetail = addressDetail;
+        this.address = address;
+        this.zonecode = zonecode;
+        this.member = member;
+        this.status = status;
+        this.orderTime = orderTime;
+    }
 }
