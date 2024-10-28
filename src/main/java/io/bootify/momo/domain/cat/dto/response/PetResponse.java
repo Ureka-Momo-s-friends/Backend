@@ -8,8 +8,8 @@ public record PetResponse(
         String petName,
         LocalDate birthDate,
         String breed,
-        Boolean gender, // true = 암컷, false = 수컷
-        String profileImgUrl // 이미지 파일 URL
+        Boolean gender,
+        byte[] profileImg // 이미지 데이터를 전달
 ) {
     public static PetResponse of(Pet pet) {
         return new PetResponse(
@@ -18,7 +18,7 @@ public record PetResponse(
                 pet.getBirthDate(),
                 pet.getBreed(),
                 pet.getGender(),
-                pet.getProfileImgUrl()
+                pet.getProfileImg() // 이미지 데이터
         );
     }
 }

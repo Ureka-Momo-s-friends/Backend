@@ -2,20 +2,25 @@ package io.bootify.momo.domain.cat.service;
 
 import io.bootify.momo.domain.cat.dto.request.PetRequest;
 import io.bootify.momo.domain.cat.dto.response.PetResponse;
-import io.bootify.momo.domain.cat.repository.PetRepository;
 import io.bootify.momo.domain.cat.model.Pet;
+import io.bootify.momo.domain.cat.repository.PetRepository;
+import io.bootify.momo.domain.member.model.Member;
+import io.bootify.momo.domain.member.repository.MemberRepository;
 import io.bootify.momo.util.NotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
 public class PetService {
 
     private final PetRepository petRepository;
+    private final MemberRepository memberRepository;
 
-    public PetService(final PetRepository petRepository) {
+    public PetService(final PetRepository petRepository, final MemberRepository memberRepository) {
         this.petRepository = petRepository;
+        this.memberRepository = memberRepository;
     }
 
     public List<PetResponse> findAll() {
@@ -31,12 +36,14 @@ public class PetService {
         return petRepository.findByMemberId(memberId).stream().map(PetResponse::of).toList();
     }
 
-    public Long create(PetRequest petRequest) {
-        Pet pet = mapToEntity(petRequest);
-        return petRepository.save(pet).getId();
+    public Long create(PetRequest petRequest) throws IOException {
+        Member member = memberRepository.findById(petRequest.memberId()).orElseThrow(NotFoundException::new);
+        Pet pet = mapToEntity(petRequest, member);
+        petRepository.save(pet);
+        return pet.getId();
     }
 
-    public void update(Long id, PetRequest petRequest) {
+    public void update(Long id, PetRequest petRequest) throws IOException {
         Pet pet = petRepository.findById(id).orElseThrow(NotFoundException::new);
         mapToEntity(petRequest, pet);
         petRepository.save(pet);
@@ -46,27 +53,27 @@ public class PetService {
         petRepository.deleteById(id);
     }
 
-    private Pet mapToEntity(PetRequest petRequest) {
+    // PetService.java에서 mapToEntity 메서드
+    private Pet mapToEntity(PetRequest petRequest, Member member) throws IOException {
         Pet pet = new Pet();
         pet.setPetName(petRequest.petName());
         pet.setBirthDate(petRequest.birthDate());
-        pet.setBreed(petRequest.breed());
-        pet.setGender(petRequest.gender());
+        pet.setBreed(petRequest.breed() != null ? petRequest.breed() : "Unknown"); // null일 때 기본값 설정
+        pet.setGender(petRequest.gender() != null ? petRequest.gender() : false); // null일 때 기본값 설정
+        pet.setMember(member);
+        if (petRequest.profileImage() != null && !petRequest.profileImage().isEmpty()) {
+            pet.setProfileImg(petRequest.profileImage().getBytes());
+        }
         return pet;
     }
 
-    private void mapToEntity(PetRequest petRequest, Pet pet) {
+    private void mapToEntity(PetRequest petRequest, Pet pet) throws IOException {
         pet.setPetName(petRequest.petName());
         pet.setBirthDate(petRequest.birthDate());
-        pet.setBreed(petRequest.breed());
-        pet.setGender(petRequest.gender());
-
+        pet.setBreed(petRequest.breed() != null ? petRequest.breed() : "Unknown");
+        pet.setGender(petRequest.gender() != null ? petRequest.gender() : false);
         if (petRequest.profileImage() != null && !petRequest.profileImage().isEmpty()) {
-            // 파일을 처리하고, 해당 경로를 설정
-            pet.setProfileImgUrl("/uploads/" + petRequest.profileImage().getOriginalFilename());
-        } else {
-            pet.setProfileImgUrl(petRequest.profileImgUrl()); // 기존 URL 설정
+            pet.setProfileImg(petRequest.profileImage().getBytes());
         }
     }
 }
-
