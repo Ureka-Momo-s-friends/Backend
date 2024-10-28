@@ -28,9 +28,17 @@ public class FileStorageService {
         return storeFile(file, fileName, "pet");
     }
 
+    // 길고양이 이미지 저장
+    public String storeStrayCatFile(MultipartFile file) {
+        String fileName = "stray_" + System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        return storeFile(file, fileName, "stray");
+    }
+
+    // 파일 저장 메서드
     private String storeFile(MultipartFile file, String fileName, String folder) {
         try {
             Path targetLocation = Paths.get(fileStorageLocation).resolve(folder).resolve(fileName);
+            Files.createDirectories(targetLocation.getParent()); // 디렉토리 생성
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             return "/uploads/" + folder + "/" + fileName;
         } catch (IOException ex) {
@@ -38,4 +46,5 @@ public class FileStorageService {
         }
     }
 }
+
 

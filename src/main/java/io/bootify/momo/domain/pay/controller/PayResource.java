@@ -1,6 +1,7 @@
 package io.bootify.momo.domain.pay.controller;
 
-import io.bootify.momo.model.PayDTO;
+
+import io.bootify.momo.domain.pay.dto.PayDTO;
 import io.bootify.momo.domain.pay.service.PayService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -55,5 +56,4 @@ public class PayResource {
         payService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 }

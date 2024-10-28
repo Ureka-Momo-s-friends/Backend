@@ -18,8 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @CrossOrigin(origins = "http://localhost:3000") // React 개발 서버 주소
 @RestController
 @RequestMapping(value = "/api/members", produces = MediaType.APPLICATION_JSON_VALUE)
