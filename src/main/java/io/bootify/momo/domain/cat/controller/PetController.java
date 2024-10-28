@@ -69,15 +69,17 @@ public class PetController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updatePet(@PathVariable(name = "id") final Long id,
-                                          @RequestPart("petData") @Valid final PetRequest petRequest) {
+                                          @RequestPart("petData") @Valid final PetRequest petRequest,
+                                          @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
         try {
-            petService.update(id, petRequest);
+            petService.update(id, petRequest, profileImg); // profileImg 추가
             return ResponseEntity.ok(id);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePet(@PathVariable(name = "id") final Long id) {

@@ -8,6 +8,7 @@ import io.bootify.momo.domain.member.model.Member;
 import io.bootify.momo.domain.member.repository.MemberRepository;
 import io.bootify.momo.util.NotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,11 +44,21 @@ public class PetService {
         return pet.getId();
     }
 
-    public void update(Long id, PetRequest petRequest) throws IOException {
+    public void update(Long id, PetRequest petRequest, MultipartFile profileImg) throws IOException {
         Pet pet = petRepository.findById(id).orElseThrow(NotFoundException::new);
-        mapToEntity(petRequest, pet);
+        pet.setPetName(petRequest.petName());
+        pet.setBirthDate(petRequest.birthDate());
+        pet.setBreed(petRequest.breed());
+        pet.setGender(petRequest.gender());
+
+        // 새 이미지 파일이 있으면 업데이트, 없으면 기존 이미지 유지
+        if (profileImg != null && !profileImg.isEmpty()) {
+            pet.setProfileImg(profileImg.getBytes());
+        }
+
         petRepository.save(pet);
     }
+
 
     public void delete(Long id) {
         petRepository.deleteById(id);
