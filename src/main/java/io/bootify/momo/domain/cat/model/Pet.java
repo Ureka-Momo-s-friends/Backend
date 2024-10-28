@@ -28,7 +28,7 @@ public class Pet {
     private LocalDate birthDate;
 
     @Lob
-    @Column(name = "profile_img", nullable = true)
+    @Column(name = "profile_img", columnDefinition = "LONGBLOB")
     private byte[] profileImg;
 
     @Column(nullable = false, columnDefinition = "tinyint(1)")

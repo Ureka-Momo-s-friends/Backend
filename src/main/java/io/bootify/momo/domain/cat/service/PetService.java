@@ -53,16 +53,21 @@ public class PetService {
         petRepository.deleteById(id);
     }
 
-    // PetService.java에서 mapToEntity 메서드
+    public Pet getEntity(Long id) {
+        return petRepository.findById(id).orElseThrow(() -> new NotFoundException("Pet not found with id: " + id));
+    }
+
+
+    // PetService.java
     private Pet mapToEntity(PetRequest petRequest, Member member) throws IOException {
         Pet pet = new Pet();
         pet.setPetName(petRequest.petName());
         pet.setBirthDate(petRequest.birthDate());
-        pet.setBreed(petRequest.breed() != null ? petRequest.breed() : "Unknown"); // null일 때 기본값 설정
-        pet.setGender(petRequest.gender() != null ? petRequest.gender() : false); // null일 때 기본값 설정
+        pet.setBreed(petRequest.breed());
+        pet.setGender(petRequest.gender());
         pet.setMember(member);
-        if (petRequest.profileImage() != null && !petRequest.profileImage().isEmpty()) {
-            pet.setProfileImg(petRequest.profileImage().getBytes());
+        if (petRequest.profileImg() != null) {
+            pet.setProfileImg(petRequest.profileImg().getBytes());
         }
         return pet;
     }
@@ -70,10 +75,10 @@ public class PetService {
     private void mapToEntity(PetRequest petRequest, Pet pet) throws IOException {
         pet.setPetName(petRequest.petName());
         pet.setBirthDate(petRequest.birthDate());
-        pet.setBreed(petRequest.breed() != null ? petRequest.breed() : "Unknown");
-        pet.setGender(petRequest.gender() != null ? petRequest.gender() : false);
-        if (petRequest.profileImage() != null && !petRequest.profileImage().isEmpty()) {
-            pet.setProfileImg(petRequest.profileImage().getBytes());
+        pet.setBreed(petRequest.breed());
+        pet.setGender(petRequest.gender());
+        if (petRequest.profileImg() != null) {
+            pet.setProfileImg(petRequest.profileImg().getBytes());
         }
     }
 }

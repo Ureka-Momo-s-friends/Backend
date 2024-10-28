@@ -4,12 +4,14 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 
+// PetRequest.java
 public record PetRequest(
-        @NotNull String petName,
+        String petName,
         String breed,
         LocalDate birthDate,
         Boolean gender,
-        MultipartFile profileImage,
-        Long memberId // Member ID 추가
-) {
-}
+        Long memberId,
+        MultipartFile profileImg // 필드 이름을 profileImg로 설정
+) {}
+
+
