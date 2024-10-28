@@ -3,11 +3,9 @@ package io.bootify.momo.domain.member.controller;
 import io.bootify.momo.domain.member.service.MemberService;
 import io.bootify.momo.model.MemberDTO;
 import io.bootify.momo.service.FileStorageService;
-import io.bootify.momo.service.MemberService;
 import io.bootify.momo.util.ReferencedException;
 import io.bootify.momo.util.ReferencedWarning;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,13 +23,13 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:3000") // React 개발 서버 주소
 @RestController
 @RequestMapping(value = "/api/members", produces = MediaType.APPLICATION_JSON_VALUE)
-@RequiredArgsConstructor
+
 public class MemberController {
 
     private final MemberService memberService;
     private final FileStorageService fileStorageService;
 
-    public MemberResource(final MemberService memberService, FileStorageService fileStorageService) {
+    public MemberController(final MemberService memberService, FileStorageService fileStorageService) {
         this.memberService = memberService;
         this.fileStorageService = fileStorageService;
     }

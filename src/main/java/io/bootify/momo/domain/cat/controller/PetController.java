@@ -1,9 +1,9 @@
 package io.bootify.momo.domain.cat.controller;
 
-import io.bootify.momo.model.PetDTO;
-import io.bootify.momo.service.FileStorageService;
-import io.bootify.momo.service.PetService;
+import io.bootify.momo.domain.cat.dto.request.PetRequest;
+import io.bootify.momo.domain.cat.dto.response.PetResponse;
 import io.bootify.momo.domain.cat.service.PetService;
+import io.bootify.momo.service.FileStorageService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -29,59 +29,62 @@ public class PetController {
     @Value("${file.upload-dir}")
     private String fileStorageLocation;
 
-    public PetResource(final PetService petService, final FileStorageService fileStorageService) {
-    public PetController(final PetService petService) {
+    public PetController(final PetService petService, final FileStorageService fileStorageService) {
         this.petService = petService;
         this.fileStorageService = fileStorageService;
     }
 
     @GetMapping
-    public ResponseEntity<List<PetDTO>> getAllPets() {
+    public ResponseEntity<List<PetResponse>> getAllPets() {
         return ResponseEntity.ok(petService.findAll());
     }
 
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<List<PetDTO>> getPetsByMemberId(@PathVariable Long memberId) {
-        List<PetDTO> pets = petService.getPetsByMemberId(memberId);
+    public ResponseEntity<List<PetResponse>> getPetsByMemberId(@PathVariable Long memberId) {
+        List<PetResponse> pets = petService.getPetsByMemberId(memberId);
         return ResponseEntity.ok(pets);
     }
 
     @PostMapping
-    public ResponseEntity<PetDTO> createPet(
-            @RequestPart("petData") @Valid final PetDTO petDTO,
-            @RequestPart(value = "profileImgUrl", required = false) MultipartFile profileImgUrl) {
+    public ResponseEntity<PetResponse> createPet(
+            @RequestPart("petData") @Valid final PetRequest petRequest) {
         try {
-            Long createdId = petService.create(petDTO);
+            // 파일 업로드가 있는지 확인
+            MultipartFile profileImage = petRequest.profileImage();
 
-            if (profileImgUrl != null && !profileImgUrl.isEmpty()) {
-                String filePath = fileStorageService.storePetFile(profileImgUrl, createdId);
-                petDTO.setProfileImgUrl(filePath);
-                petService.update(createdId, petDTO);
+            Long createdId = petService.create(petRequest);
+
+            // 이미지 파일이 있는 경우 처리
+            if (profileImage != null && !profileImage.isEmpty()) {
+                String filePath = fileStorageService.storePetFile(profileImage, createdId);
+                // 프로필 이미지 경로를 설정
+                petRequest.setProfileImgUrl(filePath);
+                // 업데이트 호출
+                petService.update(createdId, petRequest);
             }
 
-            PetDTO createdPet = petService.get(createdId);
+            PetResponse createdPet = petService.get(createdId);
             return new ResponseEntity<>(createdPet, HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
-            // 오류 로그 추가
             System.err.println("Error adding pet: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
-
     @PutMapping("/{id}")
     public ResponseEntity<Long> updatePet(@PathVariable(name = "id") final Long id,
-                                          @RequestPart("petData") @Valid final PetDTO petDTO,
-                                          @RequestPart(value = "profileImgUrl", required = false) MultipartFile profileImgUrl) {
+                                          @RequestPart("petData") @Valid final PetRequest petRequest) {
         try {
-            if (profileImgUrl != null && !profileImgUrl.isEmpty()) {
-                // 파일 저장 로직 수정
-                String filePath = fileStorageService.storePetFile(profileImgUrl, id);
-                petDTO.setProfileImgUrl(filePath);
+            // 파일 업로드가 있는지 확인
+            MultipartFile profileImage = petRequest.profileImage();
+
+            if (profileImage != null && !profileImage.isEmpty()) {
+                String filePath = fileStorageService.storePetFile(profileImage, id);
+                petRequest.setProfileImgUrl(filePath);
             }
 
-            petService.update(id, petDTO);
+            petService.update(id, petRequest);
             return ResponseEntity.ok(id);
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,7 +103,6 @@ public class PetController {
         try {
             Path filePath = Paths.get(fileStorageLocation).resolve(fileName).normalize();
             byte[] fileContent = Files.readAllBytes(filePath);
-            // 확장자에 따라 Content-Type을 설정 (예시: PNG, JPEG)
             String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
             MediaType mediaType = fileExtension.equals("png") ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
             return ResponseEntity.ok().contentType(mediaType).body(fileContent);

@@ -1,6 +1,5 @@
 package io.bootify.momo.domain.member.service;
 
-import io.bootify.momo.domain.member.model.Address;
 import io.bootify.momo.domain.member.model.Cart;
 import io.bootify.momo.domain.member.model.Member;
 import io.bootify.momo.domain.order.model.Order;

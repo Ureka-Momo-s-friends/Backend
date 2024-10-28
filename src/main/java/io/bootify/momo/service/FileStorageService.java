@@ -13,7 +13,7 @@ import java.nio.file.StandardCopyOption;
 @Service
 public class FileStorageService {
 
-    @Value("${file.upload-dir}")
+    @Value("${file.upload-dir:uploads}")
     private String fileStorageLocation;
 
     // 사용자 프로필 이미지 저장
