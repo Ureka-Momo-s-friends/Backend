@@ -3,14 +3,7 @@ package io.bootify.momo.domain.member.model;
 import io.bootify.momo.domain.order.model.Order;
 import io.bootify.momo.domain.cat.model.Pet;
 import io.bootify.momo.domain.cat.model.StrayCat;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.*;
-
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,8 +30,10 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Pet> memberPets;
 
-    @Column(name = "profile_img_url", length = 255) // 새로운 필드 추가
-    private String profileImgUrl;
+    @Lob // BLOB 타입으로 지정
+    @Column(name = "profile_img")
+    private byte[] profileImg; // 변경된 필드명과 타입
+
     @OneToMany(mappedBy = "member")
     private Set<Cart> memberCarts;
 
@@ -51,4 +46,3 @@ public class Member {
     @OneToMany(mappedBy = "member")
     private Set<MemberAddress> memberAddresses;
 }
-

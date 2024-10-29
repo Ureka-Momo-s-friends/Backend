@@ -1,16 +1,12 @@
 package io.bootify.momo.domain.member.controller;
 
+import io.bootify.momo.domain.member.dto.request.MemberRequest;
+import io.bootify.momo.domain.member.dto.response.MemberResponse;
 import io.bootify.momo.domain.member.service.MemberService;
-import io.bootify.momo.model.MemberDTO;
-import io.bootify.momo.service.FileStorageService;
 import io.bootify.momo.util.ReferencedException;
 import io.bootify.momo.util.ReferencedWarning;
 import jakarta.validation.Valid;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,36 +17,33 @@ import org.springframework.web.multipart.MultipartFile;
 @CrossOrigin(origins = "http://localhost:3000") // React 개발 서버 주소
 @RestController
 @RequestMapping(value = "/api/members", produces = MediaType.APPLICATION_JSON_VALUE)
-
 public class MemberController {
 
     private final MemberService memberService;
-    private final FileStorageService fileStorageService;
 
-    public MemberController(final MemberService memberService, FileStorageService fileStorageService) {
+    public MemberController(final MemberService memberService) {
         this.memberService = memberService;
-        this.fileStorageService = fileStorageService;
     }
 
     @GetMapping
-    public ResponseEntity<List<MemberDTO>> getAllMembers() {
+    public ResponseEntity<List<MemberResponse>> getAllMembers() {
         return ResponseEntity.ok(memberService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MemberDTO> getMember(@PathVariable(name = "id") final Long id) {
+    public ResponseEntity<MemberResponse> getMember(@PathVariable(name = "id") final Long id) {
         return ResponseEntity.ok(memberService.get(id));
     }
 
     @PostMapping("/google-login")
-    public ResponseEntity<MemberDTO> googleLogin(@RequestBody @Valid final MemberDTO memberDTO) {
+    public ResponseEntity<MemberResponse> googleLogin(@RequestBody @Valid final MemberRequest memberRequest) {
         // Google ID를 기준으로 기존 사용자가 있는지 확인
-        MemberDTO existingMember = memberService.findByGoogleId(memberDTO.getGoogleId());
+        MemberResponse existingMember = memberService.findByGoogleId(memberRequest.getGoogleId());
 
         if (existingMember == null) {
             // 기존 사용자가 없다면 새로 생성
-            final Long createdId = memberService.create(memberDTO);
-            MemberDTO newMember = memberService.get(createdId); // 생성된 멤버 정보 가져오기
+            final Long createdId = memberService.create(memberRequest);
+            MemberResponse newMember = memberService.get(createdId); // 생성된 멤버 정보 가져오기
             return new ResponseEntity<>(newMember, HttpStatus.CREATED);
         } else {
             // 기존 사용자가 있다면 기존 사용자 정보 반환
@@ -60,20 +53,13 @@ public class MemberController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateMember(@PathVariable(name = "id") final Long id,
-                                             @RequestPart("userData") @Valid final MemberDTO memberDTO,
-                                             @RequestPart(value = "profileImgUrl", required = false) MultipartFile file) {
+                                             @RequestPart("userData") @Valid final MemberRequest memberRequest,
+                                             @RequestPart(value = "profileImg", required = false) MultipartFile file) throws IOException {
         if (file != null && !file.isEmpty()) {
-            String fileName = id + "_" + file.getOriginalFilename();
-            Path targetLocation = Paths.get("C:/Users/rlgus/Desktop/upload/").resolve(fileName);
-            try {
-                Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-                memberDTO.setProfileImgUrl("/uploads/" + fileName);
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to store file.", e);
-            }
+            memberRequest.setProfileImg(file.getBytes());
         }
 
-        memberService.update(id, memberDTO);
+        memberService.update(id, memberRequest);
         return ResponseEntity.ok(id);
     }
 
@@ -86,5 +72,4 @@ public class MemberController {
         memberService.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 }
