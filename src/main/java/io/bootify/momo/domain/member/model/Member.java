@@ -31,7 +31,7 @@ public class Member {
     private Set<Pet> memberPets;
 
     @Lob // BLOB 타입으로 지정
-    @Column(name = "profile_img")
+    @Column(name = "profile_img", columnDefinition = "LONGBLOB")
     private byte[] profileImg; // 변경된 필드명과 타입
 
     @OneToMany(mappedBy = "member")

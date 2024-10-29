@@ -54,14 +54,21 @@ public class MemberController {
     @PutMapping("/{id}")
     public ResponseEntity<Long> updateMember(@PathVariable(name = "id") final Long id,
                                              @RequestPart("userData") @Valid final MemberRequest memberRequest,
-                                             @RequestPart(value = "profileImg", required = false) MultipartFile file) throws IOException {
-        if (file != null && !file.isEmpty()) {
-            memberRequest.setProfileImg(file.getBytes());
-        }
+                                             @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
+        try {
+            if (profileImg != null) {
+                // 이미지 파일을 바이트 배열로 변환
+                memberRequest.setProfileImg(profileImg.getBytes());
+            }
 
-        memberService.update(id, memberRequest);
-        return ResponseEntity.ok(id);
+            memberService.update(id, memberRequest);
+            return ResponseEntity.ok(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMember(@PathVariable(name = "id") final Long id) {

@@ -41,8 +41,15 @@ public class MemberService {
         final Member member = memberRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
         mapToEntity(memberRequest, member);
+
+        // 프로필 이미지가 있는 경우 설정
+        if (memberRequest.getProfileImg() != null) {
+            member.setProfileImg(memberRequest.getProfileImg());
+        }
+
         memberRepository.save(member);
     }
+
 
     public MemberResponse findByGoogleId(final String googleId) {
         return memberRepository.findByGoogleId(googleId)
