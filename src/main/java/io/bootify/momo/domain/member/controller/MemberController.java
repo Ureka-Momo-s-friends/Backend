@@ -3,10 +3,7 @@ package io.bootify.momo.domain.member.controller;
 import io.bootify.momo.domain.member.dto.request.MemberRequest;
 import io.bootify.momo.domain.member.dto.response.MemberResponse;
 import io.bootify.momo.domain.member.service.MemberService;
-import io.bootify.momo.util.ReferencedException;
-import io.bootify.momo.util.ReferencedWarning;
 import jakarta.validation.Valid;
-import java.io.IOException;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -56,18 +53,16 @@ public class MemberController {
                                              @RequestPart("userData") @Valid final MemberRequest memberRequest,
                                              @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
         try {
-            if (profileImg != null) {
-                // 이미지 파일을 바이트 배열로 변환
-                memberRequest.setProfileImg(profileImg.getBytes());
-            }
-
-            memberService.update(id, memberRequest);
+            // 프로필 이미지 파일이 있는 경우에만 전달
+            memberService.update(id, memberRequest, profileImg);
             return ResponseEntity.ok(id);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+
 
 
 //    @DeleteMapping("/{id}")

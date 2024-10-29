@@ -7,6 +7,9 @@ import io.bootify.momo.domain.member.repository.MemberRepository;
 import io.bootify.momo.util.NotFoundException;
 import io.bootify.momo.util.ReferencedWarning;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,20 +40,23 @@ public class MemberService {
         return memberRepository.save(member).getId();
     }
 
-    public void update(final Long id, final MemberRequest memberRequest) {
+    public void update(final Long id, final MemberRequest memberRequest, MultipartFile profileImg) throws IOException {
         final Member member = memberRepository.findById(id)
                 .orElseThrow(NotFoundException::new);
-        mapToEntity(memberRequest, member);
 
-        // 프로필 이미지가 있는 경우 설정
-        if (memberRequest.getProfileImg() != null) {
-            member.setProfileImg(memberRequest.getProfileImg());
+        // 필드를 직접 업데이트
+        member.setUsername(memberRequest.getUsername());
+        member.setContact(memberRequest.getContact());
+        member.setGoogleId(memberRequest.getGoogleId());
+
+        // 새 이미지 파일이 있으면 업데이트, 없으면 기존 이미지 유지
+        if (profileImg != null && !profileImg.isEmpty()) {
+            member.setProfileImg(profileImg.getBytes());
         }
 
         memberRepository.save(member);
     }
-
-
+    
     public MemberResponse findByGoogleId(final String googleId) {
         return memberRepository.findByGoogleId(googleId)
                 .map(this::mapToResponse)
