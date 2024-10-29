@@ -9,6 +9,7 @@ import io.bootify.momo.util.ReferencedWarning;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,22 +57,27 @@ public class MemberService {
 
         memberRepository.save(member);
     }
-    
+
     public MemberResponse findByGoogleId(final String googleId) {
         return memberRepository.findByGoogleId(googleId)
                 .map(this::mapToResponse)
                 .orElse(null);
     }
 
-    public ReferencedWarning getReferencedWarning(final Long id) {
-        return null;
+    // 회원 정보 삭제 메서드
+    public void delete(final Long id) {
+        // 해당 ID의 회원 정보 존재 여부 확인
+        Member member = memberRepository.findById(id).orElseThrow(() -> new NotFoundException("Member not found"));
+
+        // 회원 삭제
+        memberRepository.delete(member);
     }
 
-//    public void delete(final Long id) {
-//        Member member = memberRepository.findById(id)
-//                .orElseThrow(() -> new NotFoundException("Member not found"));
-//        memberRepository.deleteById(id);
-//    }
+    // 참조 경고 확인 (필요 시 사용)
+    public ReferencedWarning getReferencedWarning(final Long id) {
+        // 다른 참조와의 연결 확인 및 경고 메시지 반환
+        return null; // 필요 없을 경우 null 반환
+    }
 
     private MemberResponse mapToResponse(final Member member) {
         MemberResponse response = new MemberResponse();

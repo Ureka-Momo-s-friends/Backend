@@ -3,6 +3,8 @@ package io.bootify.momo.domain.member.controller;
 import io.bootify.momo.domain.member.dto.request.MemberRequest;
 import io.bootify.momo.domain.member.dto.response.MemberResponse;
 import io.bootify.momo.domain.member.service.MemberService;
+import io.bootify.momo.util.ReferencedException;
+import io.bootify.momo.util.ReferencedWarning;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -62,16 +64,17 @@ public class MemberController {
         }
     }
 
+    // 계정 삭제 엔드포인트
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMember(@PathVariable(name = "id") final Long id) {
+        // 회원 참조 경고 확인 (필요 시)
+        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
+        if (referencedWarning != null) {
+            throw new ReferencedException(referencedWarning);
+        }
 
-
-
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteMember(@PathVariable(name = "id") final Long id) {
-//        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
-//        if (referencedWarning != null) {
-//            throw new ReferencedException(referencedWarning);
-//        }
-//        memberService.delete(id);
-//        return ResponseEntity.noContent().build();
-//    }
+        // 삭제 서비스 호출
+        memberService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
