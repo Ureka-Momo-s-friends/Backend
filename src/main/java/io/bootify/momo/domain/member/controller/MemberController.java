@@ -70,13 +70,13 @@ public class MemberController {
     }
 
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMember(@PathVariable(name = "id") final Long id) {
-        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
-        if (referencedWarning != null) {
-            throw new ReferencedException(referencedWarning);
-        }
-        memberService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteMember(@PathVariable(name = "id") final Long id) {
+//        final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
+//        if (referencedWarning != null) {
+//            throw new ReferencedException(referencedWarning);
+//        }
+//        memberService.delete(id);
+//        return ResponseEntity.noContent().build();
+//    }
 }

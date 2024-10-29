@@ -61,11 +61,11 @@ public class MemberService {
         return null;
     }
 
-    public void delete(final Long id) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Member not found"));
-        memberRepository.deleteById(id);
-    }
+//    public void delete(final Long id) {
+//        Member member = memberRepository.findById(id)
+//                .orElseThrow(() -> new NotFoundException("Member not found"));
+//        memberRepository.deleteById(id);
+//    }
 
     private MemberResponse mapToResponse(final Member member) {
         MemberResponse response = new MemberResponse();
