@@ -21,7 +21,7 @@ public class Member {
     @Column(nullable = false, length = 15)
     private String username;
 
-    @Column(nullable = false, length = 11)
+    @Column(nullable = false, length = 20)
     private String contact;
 
     @Column(name = "google_id", length = 255, nullable = false)

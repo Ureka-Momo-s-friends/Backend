@@ -1,5 +1,6 @@
 package io.bootify.momo.domain.member.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.bootify.momo.domain.member.dto.request.MemberRequest;
 import io.bootify.momo.domain.member.dto.response.MemberResponse;
 import io.bootify.momo.domain.member.service.MemberService;
@@ -40,13 +41,36 @@ public class MemberController {
         MemberResponse existingMember = memberService.findByGoogleId(memberRequest.getGoogleId());
 
         if (existingMember == null) {
-            // 기존 사용자가 없다면 새로 생성
-            final Long createdId = memberService.create(memberRequest);
-            MemberResponse newMember = memberService.get(createdId); // 생성된 멤버 정보 가져오기
-            return new ResponseEntity<>(newMember, HttpStatus.CREATED);
+            // 기존 사용자가 없다면 404 상태로 반환
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } else {
             // 기존 사용자가 있다면 기존 사용자 정보 반환
-            return new ResponseEntity<>(existingMember, HttpStatus.OK);
+            return ResponseEntity.ok(existingMember);
+        }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<MemberResponse> register(
+            @RequestPart("userData") @Valid final String userDataJson,
+            @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
+        try {
+            // userDataJson을 MemberRequest 객체로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            MemberRequest memberRequest = objectMapper.readValue(userDataJson, MemberRequest.class);
+
+            // profileImg가 null인 경우 빈 배열로 설정
+            if (profileImg != null && !profileImg.isEmpty()) {
+                memberRequest.setProfileImg(profileImg.getBytes());
+            }
+
+            // 신규 유저를 등록합니다.
+            Long createdId = memberService.create(memberRequest, profileImg); // 수정된 부분
+            MemberResponse newMember = memberService.get(createdId); // 새로 생성된 유저 정보 반환
+            return new ResponseEntity<>(newMember, HttpStatus.CREATED);
+        } catch (Exception e) {
+            // 예외 발생 시 서버 로그에 출력
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

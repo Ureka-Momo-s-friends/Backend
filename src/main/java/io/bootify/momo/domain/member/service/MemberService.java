@@ -36,10 +36,17 @@ public class MemberService {
                 .orElseThrow(NotFoundException::new);
     }
 
-    public Long create(final MemberRequest memberRequest) {
+    public Long create(final MemberRequest memberRequest, MultipartFile profileImg) throws IOException {
         final Member member = mapToEntity(memberRequest, new Member());
+
+        // 프로필 이미지가 있으면 저장
+        if (profileImg != null && !profileImg.isEmpty()) {
+            member.setProfileImg(profileImg.getBytes());
+        }
+
         return memberRepository.save(member).getId();
     }
+
 
     public void update(final Long id, final MemberRequest memberRequest, MultipartFile profileImg) throws IOException {
         final Member member = memberRepository.findById(id)
