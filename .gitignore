@@ -38,3 +38,5 @@ out/
 
 ## ENV file ##
 ./.env
+../.env
+.env
