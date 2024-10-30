@@ -6,7 +6,6 @@ import io.bootify.momo.domain.cat.model.StrayCat;
 import io.bootify.momo.domain.cat.repository.StrayCatRepository;
 import io.bootify.momo.domain.member.model.Member;
 import io.bootify.momo.domain.member.repository.MemberRepository;
-import io.bootify.momo.service.FileStorageService;
 import io.bootify.momo.util.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
