@@ -23,7 +23,7 @@ public class StrayCatController {
 
     // 특정 회원의 고양이 전체 조회
     @GetMapping
-    public ResponseEntity<List<StrayCatResponse>> getAllStrayCats(@RequestBody Long memberId) {
+    public ResponseEntity<List<StrayCatResponse>> getAllStrayCats(@RequestParam("memberId") Long memberId) {
         return ResponseEntity.ok(strayCatService.findAll(memberId));
     }
 

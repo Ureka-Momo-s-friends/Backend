@@ -24,7 +24,7 @@ public class PetController {
     private final PetService petService;
 
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<List<PetResponse>> getPetsByMemberId(@PathVariable Long memberId) {
+    public ResponseEntity<List<PetResponse>> getPetsByMemberId(@PathVariable("memberId") Long memberId) {
         List<PetResponse> pets = petService.getPetsByMemberId(memberId);
         return ResponseEntity.ok(pets);
     }
