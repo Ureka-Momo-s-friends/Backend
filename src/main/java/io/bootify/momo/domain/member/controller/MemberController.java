@@ -1,11 +1,11 @@
 package io.bootify.momo.domain.member.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ureca.momo.domain.member.dto.request.MemberRequest;
-import com.ureca.momo.domain.member.dto.response.MemberResponse;
-import com.ureca.momo.util.ReferencedException;
-import com.ureca.momo.util.ReferencedWarning;
+import io.bootify.momo.domain.member.dto.request.MemberRequest;
+import io.bootify.momo.domain.member.dto.response.MemberResponse;
 import io.bootify.momo.domain.member.service.MemberService;
+import io.bootify.momo.util.ReferencedException;
+import io.bootify.momo.util.ReferencedWarning;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;

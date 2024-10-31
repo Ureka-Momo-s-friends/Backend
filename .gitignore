@@ -38,6 +38,3 @@ out/
 
 # Environment variables file
 ../.env
-
-## ENV file ##
-.env
