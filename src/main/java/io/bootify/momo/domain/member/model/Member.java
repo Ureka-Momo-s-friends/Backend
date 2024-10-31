@@ -1,3 +1,4 @@
+
 package io.bootify.momo.domain.member.model;
 
 import io.bootify.momo.domain.order.model.Order;
