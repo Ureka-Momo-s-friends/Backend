@@ -1,13 +1,12 @@
 package com.ureca.momo;
 
-import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = {
-        "io.bootify.momo.domain"
+		"com.ureca.momo.domain"
 })
 public class MomoApplication {
 
@@ -16,4 +15,3 @@ public class MomoApplication {
 	}
 
 }
-

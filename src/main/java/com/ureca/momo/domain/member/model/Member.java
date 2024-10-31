@@ -12,9 +12,8 @@ import lombok.Setter;
 public class Member {
 
     @Id
-    @Column(name = "member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // 열 이름을 명시적으로 지정하지 않습니다.
 
     @Column(nullable = false, length = 15)
     private String username;
@@ -25,9 +24,9 @@ public class Member {
     @Column(name = "google_id", length = 255, nullable = false)
     private String googleId;
 
-    @Lob // BLOB 타입으로 지정
+    @Lob
     @Column(name = "profile_img", columnDefinition = "LONGBLOB")
-    private byte[] profileImg; // 변경된 필드명과 타입
+    private byte[] profileImg;
 
     public Member(String username, String contact, String googleId, byte[] profileImg) {
         this.username = username;
@@ -36,3 +35,4 @@ public class Member {
         this.profileImg = profileImg;
     }
 }
+

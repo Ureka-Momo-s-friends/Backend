@@ -5,12 +5,15 @@ import com.ureca.momo.domain.member.dto.response.MemberResponse;
 import com.ureca.momo.domain.member.model.Member;
 import com.ureca.momo.domain.member.repository.MemberRepository;
 import com.ureca.momo.util.NotFoundException;
+import com.ureca.momo.util.ReferencedWarning;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -19,40 +22,41 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
+    public List<MemberResponse> findAll() {
+        // 모든 멤버를 찾아서 응답 객체로 변환
+        return memberRepository.findAll().stream()
+                .map(MemberResponse::of)
+                .collect(Collectors.toList());
+    }
+
     public MemberResponse get(final Long id) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Member not found with id: " + id));
-        return MemberResponse.of(member);
+        return memberRepository.findById(id)
+                .map(MemberResponse::of)
+                .orElseThrow(NotFoundException::new);
+    }
+
+    public Long create(final MemberRequest memberRequest, MultipartFile profileImg) throws IOException {
+        final Member member = mapToEntity(memberRequest, new Member());
+
+        // 프로필 이미지가 있으면 저장
+        if (profileImg != null && !profileImg.isEmpty()) {
+            member.setProfileImg(profileImg.getBytes());
+        }
+
+        return memberRepository.save(member).getId();
     }
 
 
-    public MemberResponse googleLogin(MemberRequest request) {
-        // Google ID로 기존 사용자를 찾기
-        return memberRepository.findByGoogleId(request.googleId())
-                .map(MemberResponse::of) // 기존 사용자가 있으면 반환
-                .orElseGet(() -> { // 없으면 새 사용자 생성 후 반환
-                    Member newMember = new Member(
-                            request.username(),
-                            request.contact(),
-                            request.googleId(),
-                            request.profileImg()
-                    );
-                    memberRepository.save(newMember);
-                    return MemberResponse.of(newMember);
-                });
-    }
-
-    // 업데이트 메서드 추가 또는 수정
     public void update(final Long id, final MemberRequest memberRequest, MultipartFile profileImg) throws IOException {
         final Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Member not found"));
+                .orElseThrow(NotFoundException::new);
 
-        // Update fields from MemberRequest
+        // 필드를 직접 업데이트
         member.setUsername(memberRequest.username());
         member.setContact(memberRequest.contact());
         member.setGoogleId(memberRequest.googleId());
 
-        // Use profileImg MultipartFile for updating if it exists, otherwise retain existing image
+        // 새 이미지 파일이 있으면 업데이트, 없으면 기존 이미지 유지
         if (profileImg != null && !profileImg.isEmpty()) {
             member.setProfileImg(profileImg.getBytes());
         }
@@ -60,10 +64,32 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-
-
-    public void delete(final Long id) {
-        memberRepository.deleteById(id);
+    public MemberResponse findByGoogleId(final String googleId) {
+        return memberRepository.findByGoogleId(googleId)
+                .map(MemberResponse::of)
+                .orElse(null);
     }
 
+    // 회원 정보 삭제 메서드
+    public void delete(final Long id) {
+        // 해당 ID의 회원 정보 존재 여부 확인
+        Member member = memberRepository.findById(id).orElseThrow(() -> new NotFoundException("Member not found"));
+
+        // 회원 삭제
+        memberRepository.delete(member);
+    }
+
+    // 참조 경고 확인 (필요 시 사용)
+    public ReferencedWarning getReferencedWarning(final Long id) {
+        // 다른 참조와의 연결 확인 및 경고 메시지 반환
+        return null; // 필요 없을 경우 null 반환
+    }
+
+    private Member mapToEntity(final MemberRequest memberRequest, final Member member) {
+        member.setUsername(memberRequest.username());
+        member.setContact(memberRequest.contact());
+        member.setGoogleId(memberRequest.googleId());
+        member.setProfileImg(memberRequest.profileImg());
+        return member;
+    }
 }
