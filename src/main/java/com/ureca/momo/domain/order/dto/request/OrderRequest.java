@@ -3,7 +3,6 @@ package com.ureca.momo.domain.order.dto.request;
 import java.util.List;
 
 public record OrderRequest(
-        Long memberId,
         Integer zonecode,
         String address,
         String addressDetail,
