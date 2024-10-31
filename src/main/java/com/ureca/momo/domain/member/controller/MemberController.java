@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ureca.momo.domain.member.dto.request.MemberRequest;
 import com.ureca.momo.domain.member.dto.response.MemberResponse;
 import com.ureca.momo.domain.member.service.MemberService;
+import com.ureca.momo.util.ReferencedException;
+import com.ureca.momo.util.ReferencedWarning;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +24,7 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
-    private final ObjectMapper objectMapper = new ObjectMapper(); // ObjectMapper를 컨트롤러에서 사용하도록 변경
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping
     public ResponseEntity<List<MemberResponse>> getAllMembers() {
@@ -37,23 +39,20 @@ public class MemberController {
     @PostMapping("/google-login")
     public ResponseEntity<MemberResponse> googleLogin(@RequestBody @Valid final MemberRequest memberRequest) {
         try {
-            // Google ID를 기준으로 기존 사용자가 있는지 확인
             String googleId = memberRequest.googleId();
             if (googleId == null || googleId.isEmpty()) {
-                return ResponseEntity.badRequest().body(null); // Google ID가 없으면 잘못된 요청으로 처리
+                return ResponseEntity.badRequest().body(null);
             }
 
             MemberResponse existingMember = memberService.findByGoogleId(googleId);
 
             if (existingMember == null) {
-                // 기존 사용자가 없다면 404 상태로 반환
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             } else {
-                // 기존 사용자가 있다면 기존 사용자 정보 반환
                 return ResponseEntity.ok(existingMember);
             }
         } catch (Exception e) {
-            e.printStackTrace(); // 서버 로그에 예외 메시지 출력
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
@@ -63,10 +62,8 @@ public class MemberController {
             @RequestPart("userData") @Valid final String userDataJson,
             @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
         try {
-            // userDataJson을 MemberRequest 객체로 변환
             MemberRequest memberRequest = objectMapper.readValue(userDataJson, MemberRequest.class);
 
-            // 프로필 이미지가 있는 경우, 새로운 MemberRequest 객체를 생성하여 필드를 업데이트
             if (profileImg != null && !profileImg.isEmpty()) {
                 memberRequest = new MemberRequest(
                         memberRequest.username(),
@@ -76,31 +73,54 @@ public class MemberController {
                 );
             }
 
-            // 신규 유저를 등록합니다.
             Long createdId = memberService.create(memberRequest);
-            MemberResponse newMember = memberService.get(createdId); // 새로 생성된 유저 정보 반환
+            MemberResponse newMember = memberService.get(createdId);
             return new ResponseEntity<>(newMember, HttpStatus.CREATED);
         } catch (IOException e) {
-            // 프로필 이미지 처리 중 발생한 예외 처리
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {
-            // 기타 예외 처리
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Long> updateMember(@PathVariable(name = "id") final Long id,
-                                             @RequestBody @Valid final MemberRequest memberRequest) {
-        memberService.update(id, memberRequest);
-        return ResponseEntity.ok(id);
+    public ResponseEntity<Long> updateMember(
+            @PathVariable(name = "id") final Long id,
+            @RequestPart("userData") @Valid final String userDataJson,
+            @RequestPart(value = "profileImg", required = false) MultipartFile profileImg) {
+        try {
+            // JSON을 MemberRequest 객체로 변환
+            MemberRequest memberRequest = objectMapper.readValue(userDataJson, MemberRequest.class);
+
+            // update 메서드 호출 시, profileImg가 있으면 전달
+            memberService.update(id, memberRequest, profileImg);
+
+            return ResponseEntity.ok(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMember(@PathVariable(name = "id") final Long id) {
-        memberService.delete(id);
-        return ResponseEntity.noContent().build();
+        try {
+            // 참조 경고가 있는지 확인
+            final ReferencedWarning referencedWarning = memberService.getReferencedWarning(id);
+            if (referencedWarning != null) {
+                throw new ReferencedException(referencedWarning);
+            }
+
+            memberService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (ReferencedException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build(); // 참조 오류 시 409 반환
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

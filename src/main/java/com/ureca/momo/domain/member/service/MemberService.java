@@ -4,6 +4,7 @@ import com.ureca.momo.domain.member.dto.request.MemberRequest;
 import com.ureca.momo.domain.member.dto.response.MemberResponse;
 import com.ureca.momo.domain.member.model.Member;
 import com.ureca.momo.domain.member.repository.MemberRepository;
+import com.ureca.momo.util.ReferencedWarning;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,22 +50,36 @@ public class MemberService {
         return member.getId();
     }
 
-
     @Transactional
-    public void update(Long id, MemberRequest memberRequest) {
+    public void update(Long id, MemberRequest memberRequest, MultipartFile profileImg) throws IOException {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid member ID: " + id));
 
+        // 필드를 직접 업데이트
         member.setUsername(memberRequest.username());
         member.setContact(memberRequest.contact());
         member.setGoogleId(memberRequest.googleId());
-        member.setProfileImg(memberRequest.profileImg());
+
+        // 새 이미지 파일이 있으면 업데이트, 없으면 기존 이미지 유지
+        if (profileImg != null && !profileImg.isEmpty()) {
+            member.setProfileImg(profileImg.getBytes());
+        }
 
         memberRepository.save(member);
     }
 
     @Transactional
     public void delete(Long id) {
-        memberRepository.deleteById(id);
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+
+        memberRepository.delete(member);
+    }
+
+    // 참조 경고 확인 메서드 (필요 시 사용)
+    public ReferencedWarning getReferencedWarning(Long id) {
+        // 다른 참조와의 연결 확인 및 경고 메시지 반환 로직 추가
+        // 예: 특정 조건에 따라 반환할 수 있는 경고 생성
+        return null; // 경고가 필요 없을 경우 null 반환
     }
 }
