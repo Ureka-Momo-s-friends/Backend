@@ -32,7 +32,7 @@ public class StrayCatServiceImpl implements StrayCatService {
     }
 
     @Override
-    public Long create(StrayCatRequest request, Long memberId) {
+    public StrayCatResponse create(StrayCatRequest request, Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotFoundException::new);
 
@@ -41,7 +41,9 @@ public class StrayCatServiceImpl implements StrayCatService {
 
         // 이미지 URL을 포함하여 StrayCat 엔티티 생성
         StrayCat strayCat = new StrayCat(imageUrl, request.lat(), request.lon(), member);
-        return strayCatRepository.save(strayCat).getId();
+        StrayCat savedStrayCat = strayCatRepository.save(strayCat);
+
+        return StrayCatResponse.of(savedStrayCat);
     }
 
     @Override

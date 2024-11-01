@@ -8,7 +8,7 @@ import java.util.List;
 public interface StrayCatService {
     List<StrayCatResponse> findAll(Long memberId);
 
-    Long create(StrayCatRequest request, Long memberId);
+    StrayCatResponse create(StrayCatRequest request, Long memberId);
 
     void delete(Long id);
 }

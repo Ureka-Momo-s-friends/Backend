@@ -29,15 +29,15 @@ public class StrayCatController {
 
     // 고양이 등록
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Long> createStrayCat(
+    public ResponseEntity<StrayCatResponse> createStrayCat(
             @RequestParam("catImg") MultipartFile catImg,
             @RequestParam("lat") Double lat,
             @RequestParam("lon") Double lon,
             @RequestParam("memberId") Long memberId
     ) {
         StrayCatRequest request = new StrayCatRequest(catImg, lat, lon);
-        final Long createdId = strayCatService.create(request, memberId);
-        return new ResponseEntity<>(createdId, HttpStatus.CREATED);
+        final StrayCatResponse createdStrayCat = strayCatService.create(request, memberId);
+        return new ResponseEntity<>(createdStrayCat, HttpStatus.CREATED);
     }
 
     // 고양이 삭제
