@@ -5,12 +5,13 @@ import com.ureca.momo.domain.pay.model.Pay;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Orders {
 
@@ -59,5 +60,13 @@ public class Orders {
         this.member = member;
         this.status = status;
         this.orderTime = orderTime;
+    }
+
+    // 추가된 setPay 메서드
+    public void setPay(Pay pay) {
+        this.pay = pay;
+        if (pay != null) {
+            pay.setOrders(this);
+        }
     }
 }

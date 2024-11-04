@@ -4,10 +4,12 @@ import com.ureca.momo.domain.order.model.Orders;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Entity
 @Getter
+@Setter // 추가
 @NoArgsConstructor
 public class Pay {
 
