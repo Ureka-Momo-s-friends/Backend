@@ -9,6 +9,7 @@ public record ProductDetailResponse(
         Integer price,
         Integer salePrice,
         String thumbnail,
+        String detail,
         String detailImage
 ) {
     public static ProductDetailResponse of(Product product) {
@@ -18,6 +19,7 @@ public record ProductDetailResponse(
                 product.getPrice(),
                 product.getSalePrice(),
                 product.getThumbnail(),
+                product.getDetail(),
                 product.getDetailImage()
         );
     }

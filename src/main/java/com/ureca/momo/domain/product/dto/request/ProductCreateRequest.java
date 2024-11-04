@@ -8,6 +8,7 @@ public record ProductCreateRequest(
         Integer price,
         Integer salePrice,
         MultipartFile thumbnail,
+        String detail,
         MultipartFile detailImage,
         Category category
 ) {
