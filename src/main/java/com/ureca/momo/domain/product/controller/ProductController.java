@@ -3,14 +3,13 @@ package com.ureca.momo.domain.product.controller;
 import com.ureca.momo.domain.product.dto.request.SearchConditionRequest;
 import com.ureca.momo.domain.product.dto.response.ProductDetailResponse;
 import com.ureca.momo.domain.product.dto.response.ProductsResponse;
+import com.ureca.momo.domain.product.model.Category;
+import com.ureca.momo.domain.product.model.Product;
 import com.ureca.momo.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,4 +30,14 @@ public class ProductController {
         return ResponseEntity.ok(productService.get(id));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductsResponse>> searchProducts(@RequestParam String keyword) {
+        return ResponseEntity.ok(productService.searchByName(keyword));
+    }
+
+    @PostMapping("/batch")
+    public String saveProducts(@RequestBody List<Product> products) {
+        productService.saveProducts(products);
+        return "Products saved successfully!";
+    }
 }
