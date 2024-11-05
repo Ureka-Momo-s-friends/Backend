@@ -79,10 +79,17 @@ public class PayController {
         Optional<Pay> payOptional = payRepository.findByPaymentKey(paymentKey);
 
         if (payOptional.isPresent()) {
-            payRepository.delete(payOptional.get());
-            return ResponseEntity.ok("결제 정보가 성공적으로 삭제되었습니다.");
+            try {
+                payRepository.delete(payOptional.get());
+                return ResponseEntity.ok("결제 정보가 성공적으로 삭제되었습니다.");
+            } catch (Exception e) {
+                // 삭제 시 예외가 발생했을 경우
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("결제 정보를 삭제하는 중 오류가 발생했습니다.");
+            }
         } else {
+            // 해당 paymentKey에 대한 정보가 없을 경우
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 결제 키에 대한 결제 정보가 없습니다.");
         }
     }
+
 }
