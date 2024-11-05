@@ -1,5 +1,6 @@
 package com.ureca.momo.domain.pay.service;
 
+import com.ureca.momo.domain.pay.dto.PayResponse;
 import com.ureca.momo.domain.pay.model.Pay;
 import com.ureca.momo.domain.pay.repository.PayRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PayService {
@@ -23,6 +25,21 @@ public class PayService {
         pay.setPaymentDate(LocalDateTime.now()); // 결제 일시 설정
         return payRepository.save(pay);
     }
+
+    public List<PayResponse> findAllPayments() {
+        return payRepository.findAll()
+                .stream()
+                .map(pay -> new PayResponse(
+                        pay.getId(),
+                        pay.getAmount(),
+                        pay.getStatus(),
+                        pay.getPaymentKey(),  // 결제 키 추가
+                        pay.getOrders(),      // 주문 정보 추가
+                        pay.getPaymentDate()
+                ))
+                .collect(Collectors.toList());
+    }
+
 
     // 특정 주문 ID로 결제 정보 조회
     public Optional<Pay> findPaymentByOrderId(Long orderId) {
@@ -51,4 +68,5 @@ public class PayService {
     public Optional<Pay> findPaymentById(Long payId) {
         return payRepository.findById(payId);
     }
+
 }
