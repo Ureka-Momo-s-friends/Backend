@@ -27,6 +27,9 @@ public class Product {
     @Column(length = 500)
     private String thumbnail;
 
+    @Column(length = 1000)
+    private String detail;
+
     @Column(length = 500)
     private String detailImage;
 

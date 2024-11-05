@@ -3,6 +3,8 @@ package com.ureca.momo.domain.product.service;
 import com.ureca.momo.domain.product.dto.request.SearchConditionRequest;
 import com.ureca.momo.domain.product.dto.response.ProductDetailResponse;
 import com.ureca.momo.domain.product.dto.response.ProductsResponse;
+import com.ureca.momo.domain.product.model.Category;
+import com.ureca.momo.domain.product.model.Product;
 import com.ureca.momo.domain.product.repository.ProductRepository;
 import com.ureca.momo.util.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -39,4 +41,17 @@ public class ProductService {
                 .orElseThrow(NotFoundException::new);
     }
 
+    public List<ProductsResponse> searchByName(String name) {
+        if (name == null || name.isEmpty()) {
+            return List.of();
+        }
+        return productRepository.findByName(name)
+                .stream()
+                .map(ProductsResponse::of)
+                .toList();
+    }
+
+    public void saveProducts(List<Product> products) {
+        productRepository.saveAll(products);
+    }
 }

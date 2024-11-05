@@ -21,8 +21,8 @@ public class CartController {
     private final CartService cartService;
 
     // 특정 회원의 cart 전체 조회
-    @GetMapping
-        public ResponseEntity<List<CartResponse>> getCart(@RequestBody final Long memberId) {
+    @GetMapping("/{memberId}")
+    public ResponseEntity<List<CartResponse>> getCart(@PathVariable final Long memberId) {
         return ResponseEntity.ok(cartService.get(memberId));
     }
 

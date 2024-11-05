@@ -5,12 +5,15 @@ import com.ureca.momo.domain.pay.model.Pay;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
-
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 public class Orders {
 
@@ -45,6 +48,10 @@ public class Orders {
 
     private String orderThumbnail;
 
+    // OrderDetail과의 관계 추가
+    @OneToMany(mappedBy = "orders", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderDetail> orderDetails = new ArrayList<>();
+
     public void updateStatus(OrderStatus status) {
         this.status = status;
     }
@@ -59,5 +66,13 @@ public class Orders {
         this.member = member;
         this.status = status;
         this.orderTime = orderTime;
+    }
+
+    // 추가된 setPay 메서드
+    public void setPay(Pay pay) {
+        this.pay = pay;
+        if (pay != null) {
+            pay.setOrders(this);
+        }
     }
 }
