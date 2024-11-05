@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(value = "/api/carts", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CartController {
 
@@ -26,8 +27,11 @@ public class CartController {
     }
 
     // 장바구니에 추가
-    @PostMapping
-    public ResponseEntity<Long> createCart(@RequestBody @Valid final CartRequest request, @RequestBody final Long memberId) {
+    @PostMapping("/{memberId}")
+    public ResponseEntity<Long> createCart(
+            @RequestBody @Valid final CartRequest request,
+            @PathVariable final Long memberId
+    ) {
         final Long createdId = cartService.create(request, memberId);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
