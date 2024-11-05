@@ -37,8 +37,10 @@ public class CartService {
     }
 
     public Long create(CartRequest request, Long memberId) {
-        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundException::new);
-        Product product = productRepository.findById(request.productId()).orElseThrow(NotFoundException::new);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
+        Product product = productRepository.findById(request.productId())
+                .orElseThrow(() -> new NotFoundException("상품을 찾을 수 없습니다."));
         Cart cart = new Cart(request.amount(), member, product);
         return cartRepository.save(cart).getId();
     }

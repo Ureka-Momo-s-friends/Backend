@@ -1,7 +1,6 @@
 package com.ureca.momo.domain.product.repository;
 
 
-import com.ureca.momo.domain.product.dto.response.ProductsResponse;
 import com.ureca.momo.domain.product.model.Category;
 import com.ureca.momo.domain.product.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
