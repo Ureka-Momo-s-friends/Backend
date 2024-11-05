@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -31,4 +31,6 @@ public class Pay {
     @JoinColumn(name = "order_id")
     private Orders orders;
 
+    @Column(nullable = false)
+    private LocalDateTime paymentDate; // 결제 일시 추가
 }
