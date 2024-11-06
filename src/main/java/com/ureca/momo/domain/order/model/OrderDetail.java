@@ -32,6 +32,6 @@ public class OrderDetail {
     }
 
     public Integer calculatePrice() {
-        return amount * product.getPrice();
+        return amount * product.getSalePrice();
     }
 }
