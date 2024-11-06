@@ -37,7 +37,13 @@ public class CartService {
                 .orElseThrow(() -> new NotFoundException("회원을 찾을 수 없습니다."));
         Product product = productRepository.findById(request.productId())
                 .orElseThrow(() -> new NotFoundException("상품을 찾을 수 없습니다."));
-        Cart cart = new Cart(request.amount(), member, product);
+
+        Cart cart = cartRepository.findByMemberIdAndProductId(memberId, request.productId())
+                .map(existingCart -> {
+                    existingCart.updateAmount(existingCart.getAmount() + request.amount());
+                    return existingCart;
+                })
+                .orElse(new Cart(request.amount(), member, product));
         return cartRepository.save(cart).getId();
     }
 

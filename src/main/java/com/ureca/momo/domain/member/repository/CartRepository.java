@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
 
@@ -15,16 +16,9 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
             "WHERE c.member.id = :memberId")
     List<Cart> findAllByMemberId(@Param("memberId") Long memberId);
 
-    @Query("SELECT c FROM Cart c " +
-            "JOIN FETCH c.product p " +
-            "WHERE c.member.id = :memberId " +
-            "AND c.product.id IN :productIds")
-    List<Cart> findByMemberIdAndProductIdIn(
-            @Param("memberId") Long memberId,
-            @Param("productIds") List<Long> productIds
-    );
-
     @Modifying
     @Query("DELETE FROM Cart c WHERE c.member.id = :memberId")
     void deleteAllByMemberId(@Param("memberId") Long memberId);
+    @Query("SELECT c FROM Cart c WHERE c.member.id = :memberId AND c.product.id = :productId")
+    Optional<Cart> findByMemberIdAndProductId(@Param("memberId") Long memberId, @Param("productId") Long productId);
 }
