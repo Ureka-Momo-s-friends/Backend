@@ -1,8 +1,8 @@
 package com.ureca.momo.domain.order.service;
 
 import com.ureca.momo.domain.member.model.Member;
+import com.ureca.momo.domain.member.repository.CartRepository;
 import com.ureca.momo.domain.member.repository.MemberRepository;
-import com.ureca.momo.domain.member.service.CartService;
 import com.ureca.momo.domain.order.dto.request.OrderRequest;
 import com.ureca.momo.domain.order.dto.response.OrderDetailResponse;
 import com.ureca.momo.domain.order.dto.response.OrdersResponse;
@@ -30,10 +30,10 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
-    private final CartService cartService;
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
     private final PayService payService; // PayService 추가
+    private final CartRepository cartRepository;
 
     public List<OrdersResponse> findAll(Long memberId) {
         return orderRepository.findAllByMemberId(memberId)
@@ -54,13 +54,13 @@ public class OrderService {
 
         Orders orders = new Orders(
                 findProduct.getThumbnail(),
-                findProduct.getName() + " 등 " + orderRequest.orderDetailRequestList().size() + " 건",
+                findProduct.getName() + " 등 " + orderRequest.orderDetailRequestList().size() + "건",
                 null, // Pay 자리
                 orderRequest.addressDetail(),
                 orderRequest.address(),
                 orderRequest.zonecode(),
                 findMember,
-                OrderStatus.상품준비중,
+                OrderStatus.결제완료,
                 LocalDateTime.now()
         );
 
@@ -99,7 +99,7 @@ public class OrderService {
         orderRepository.save(savedOrder);
 
         // cart 업데이트
-        cartService.updateByOrder(memberId, orderRequest.orderDetailRequestList());
+        cartRepository.deleteAll();
 
         return savedOrder.getId();
     }

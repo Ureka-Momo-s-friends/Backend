@@ -33,8 +33,8 @@ public class Cart {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    public void updateAmount(Integer diff) {
-        this.amount += diff;
+    public void updateAmount(Integer newAmount) {
+        this.amount = newAmount;
     }
 
     public Cart(Integer amount, Member member, Product product) {

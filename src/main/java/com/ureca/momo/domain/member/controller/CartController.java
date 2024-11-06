@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/carts", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -38,8 +39,8 @@ public class CartController {
     // 장바구니 내 품목 수량 업데이트
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateCart(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid Integer number) {
-        cartService.update(id, number);
+            @RequestBody @Valid Integer newAmount) {
+        cartService.update(id, newAmount);
         return ResponseEntity.noContent().build();
     }
 

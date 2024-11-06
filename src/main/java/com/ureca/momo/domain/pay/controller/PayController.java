@@ -4,6 +4,7 @@ import com.ureca.momo.domain.pay.dto.PayResponse;
 import com.ureca.momo.domain.pay.model.Pay;
 import com.ureca.momo.domain.pay.repository.PayRepository;
 import com.ureca.momo.domain.pay.service.PayService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,9 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping(value = "/api/pays", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PayController {
@@ -63,8 +64,7 @@ public class PayController {
 
     // 결제 취소 엔드포인트
     @PostMapping("/cancel")
-    public ResponseEntity<String> cancelPayment(@RequestBody Map<String, String> request) {
-        String paymentKey = request.get("paymentKey");
+    public ResponseEntity<String> cancelPayment(@RequestBody @Valid String paymentKey) {
         if (paymentKey == null || paymentKey.isEmpty()) {
             return ResponseEntity.badRequest().body("결제 키가 누락되었습니다.");
         }
