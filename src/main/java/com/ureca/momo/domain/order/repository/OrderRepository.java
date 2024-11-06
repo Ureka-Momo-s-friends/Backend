@@ -8,6 +8,5 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Orders, Long> {
 
-    List<Orders> findAllByMemberId(Long memberId);
-
+    List<Orders> findByMemberIdOrderByOrderTimeDesc(Long memberId);
 }

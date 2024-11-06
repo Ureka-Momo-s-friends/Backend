@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -36,10 +37,10 @@ public class OrderService {
     private final CartRepository cartRepository;
 
     public List<OrdersResponse> findAll(Long memberId) {
-        return orderRepository.findAllByMemberId(memberId)
+        return orderRepository.findByMemberIdOrderByOrderTimeDesc(memberId)
                 .stream()
                 .map(OrdersResponse::of)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     public Long create(final OrderRequest orderRequest, Long memberId) {
