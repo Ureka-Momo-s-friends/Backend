@@ -12,10 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-
+@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @RequestMapping(value = "/api/strayCats")
 public class StrayCatController {
 

@@ -5,14 +5,13 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Entity
 @Getter
 @NoArgsConstructor
 public class OrderDetail {
 
     @Id
-    @Column( name = "order_detail_id")
+    @Column(name = "order_detail_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -33,6 +32,6 @@ public class OrderDetail {
     }
 
     public Integer calculatePrice() {
-        return amount * product.getPrice();
+        return amount * product.getSalePrice();
     }
 }

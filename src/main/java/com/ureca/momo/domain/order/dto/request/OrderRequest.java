@@ -1,16 +1,8 @@
 package com.ureca.momo.domain.order.dto.request;
 
-import java.util.List;
-
 public record OrderRequest(
-        Integer zonecode,
+        Long memberId,
         String address,
-        String addressDetail,
-        List<OrderDetailRequest> orderDetailRequestList
+        String paymentKey
 ) {
-    public record OrderDetailRequest(
-            Long productId,
-            Integer amount
-    ) {
-    }
 }

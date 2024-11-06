@@ -15,9 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(value = "/api/pets", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PetController {
 

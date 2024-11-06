@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/carts", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -20,24 +21,27 @@ public class CartController {
     private final CartService cartService;
 
     // 특정 회원의 cart 전체 조회
-    @GetMapping
-        public ResponseEntity<List<CartResponse>> getCart(@RequestBody final Long memberId) {
+    @GetMapping("/{memberId}")
+    public ResponseEntity<List<CartResponse>> getCart(@PathVariable("memberId") final Long memberId) {
         return ResponseEntity.ok(cartService.get(memberId));
     }
 
     // 장바구니에 추가
-    @PostMapping
-    public ResponseEntity<Long> createCart(@RequestBody @Valid final CartRequest request, @RequestBody final Long memberId) {
+    @PostMapping("/{memberId}")
+    public ResponseEntity<Long> createCart(
+            @RequestBody @Valid final CartRequest request,
+            @PathVariable("memberId") final Long memberId
+    ) {
         final Long createdId = cartService.create(request, memberId);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
     // 장바구니 내 품목 수량 업데이트
     @PutMapping("/{id}")
-    public ResponseEntity<Long> updateCart(@PathVariable(name = "id") final Long id,
-            @RequestBody @Valid Integer number) {
-        cartService.update(id, number);
-        return ResponseEntity.ok(id);
+    public ResponseEntity<Void> updateCart(@PathVariable(name = "id") final Long id,
+            @RequestBody @Valid Integer newAmount) {
+        cartService.update(id, newAmount);
+        return ResponseEntity.noContent().build();
     }
 
     // 장바구니 내 품목 삭제
