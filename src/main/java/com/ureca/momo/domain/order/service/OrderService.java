@@ -43,6 +43,9 @@ public class OrderService {
     }
 
     public Long create(final OrderRequest orderRequest, Long memberId) {
+        if (orderRequest.orderDetailRequestList() == null || orderRequest.orderDetailRequestList().isEmpty()) {
+            throw new IllegalArgumentException("Order detail request list cannot be null or empty");
+        }
         Member findMember = memberRepository.findById(memberId).orElseThrow(NotFoundException::new);
 
         // order 생성
@@ -81,8 +84,10 @@ public class OrderService {
         // Pay 엔티티 생성 및 저장
         Pay pay = new Pay();
         pay.setAmount(totalPrice);
-        pay.setStatus("PENDING");
+        pay.setStatus("SUCCESS");
+        pay.setPaymentKey(orderRequest.paymentKey());
         pay.setOrders(savedOrder);
+        pay.setPaymentDate(LocalDateTime.now());
 
         // 결제 키는 외부 요청 후에 받아와야 하므로, 여기서 직접 설정할 필요가 없습니다.
         // orderRequest에 paymentKey 추가 필요 시 DTO에 추가 후 설정
@@ -110,4 +115,6 @@ public class OrderService {
                 .map(OrderDetailResponse::of)
                 .toList();
     }
+
+
 }

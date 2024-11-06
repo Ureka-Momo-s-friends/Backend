@@ -1,5 +1,6 @@
 package com.ureca.momo.domain.pay.controller;
 
+import com.ureca.momo.domain.pay.dto.PayResponse;
 import com.ureca.momo.domain.pay.model.Pay;
 import com.ureca.momo.domain.pay.repository.PayRepository;
 import com.ureca.momo.domain.pay.service.PayService;
@@ -43,9 +44,9 @@ public class PayController {
 
     // 모든 결제 내역 가져오기
     @GetMapping("/all")
-    public ResponseEntity<List<Pay>> getAllPayments() {
-        List<Pay> payments = payService.getAllPayments();
-        return new ResponseEntity<>(payments, HttpStatus.OK);
+    public ResponseEntity<List<PayResponse>> getAllPayments() {
+        List<PayResponse> payments = payService.findAllPayments(); // 모든 결제를 반환하는 서비스 호출
+        return ResponseEntity.ok(payments);
     }
 
     // 결제 데이터 저장 엔드포인트

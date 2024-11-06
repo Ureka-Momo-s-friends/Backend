@@ -21,7 +21,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<List<OrdersResponse>> getAllOrders(@RequestBody Long memberId) {
+    public ResponseEntity<List<OrdersResponse>> getAllOrders(@RequestParam Long memberId) {
         return ResponseEntity.ok(orderService.findAll(memberId));
     }
 
@@ -30,9 +30,9 @@ public class OrderController {
         return ResponseEntity.ok(orderService.findAllDetails(id));
     }
 
-    @PostMapping
-    public ResponseEntity<Long> createOrder(@RequestBody @Valid final OrderRequest request, @RequestBody Long memberId) {
-        final Long createdId = orderService.create(request, memberId);
+    @PostMapping("/save")
+    public ResponseEntity<Long> createOrder(@RequestBody @Valid final OrderRequest request) {
+        final Long createdId = orderService.create(request, request.memberId());
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
@@ -42,5 +42,6 @@ public class OrderController {
         orderService.update(id, orderStatus);
         return ResponseEntity.ok(id);
     }
+
 
 }
