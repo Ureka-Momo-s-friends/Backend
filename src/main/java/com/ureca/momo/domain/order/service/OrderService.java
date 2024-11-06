@@ -1,5 +1,6 @@
 package com.ureca.momo.domain.order.service;
 
+import com.ureca.momo.domain.member.model.Cart;
 import com.ureca.momo.domain.member.model.Member;
 import com.ureca.momo.domain.member.repository.CartRepository;
 import com.ureca.momo.domain.member.repository.MemberRepository;
@@ -14,7 +15,6 @@ import com.ureca.momo.domain.order.repository.OrderRepository;
 import com.ureca.momo.domain.pay.model.Pay;
 import com.ureca.momo.domain.pay.service.PayService;
 import com.ureca.momo.domain.product.model.Product;
-import com.ureca.momo.domain.product.repository.ProductRepository;
 import com.ureca.momo.util.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,6 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
-    private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
     private final PayService payService; // PayService 추가
     private final CartRepository cartRepository;
@@ -43,23 +42,24 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    public Long create(final OrderRequest orderRequest, Long memberId) {
-        if (orderRequest.orderDetailRequestList() == null || orderRequest.orderDetailRequestList().isEmpty()) {
+    public Long create(final OrderRequest orderRequest) {
+        Member findMember = memberRepository.findById(orderRequest.memberId()).orElseThrow(NotFoundException::new);
+
+        List<Cart> carts = cartRepository.findAllByMemberId(orderRequest.memberId());
+        if (carts == null || carts.isEmpty()) {
             throw new IllegalArgumentException("Order detail request list cannot be null or empty");
         }
-        Member findMember = memberRepository.findById(memberId).orElseThrow(NotFoundException::new);
 
         // order 생성
-        Product findProduct = productRepository.findById(orderRequest.orderDetailRequestList().get(0).productId())
-                .orElseThrow(NotFoundException::new);
+        Product findProduct = carts.get(0).getProduct();
 
         Orders orders = new Orders(
                 findProduct.getThumbnail(),
-                findProduct.getName() + " 등 " + orderRequest.orderDetailRequestList().size() + "건",
+                carts.size() > 1
+                        ? findProduct.getName() + " 외 " + (carts.size() - 1) + "건"
+                        : findProduct.getName(),
                 null, // Pay 자리
-                orderRequest.addressDetail(),
                 orderRequest.address(),
-                orderRequest.zonecode(),
                 findMember,
                 OrderStatus.결제완료,
                 LocalDateTime.now()
@@ -68,11 +68,10 @@ public class OrderService {
         Orders savedOrder = orderRepository.save(orders);
 
         // orderDetail 생성
-        List<OrderDetail> orderDetails = orderRequest.orderDetailRequestList().stream()
-                .map(item -> {
-                    Product product = productRepository.findById(item.productId())
-                            .orElseThrow(NotFoundException::new);
-                    return new OrderDetail(item.amount(), savedOrder, product);
+        List<OrderDetail> orderDetails = carts.stream()
+                .map(cartItem -> {
+                    Product product = cartItem.getProduct();
+                    return new OrderDetail(cartItem.getAmount(), savedOrder, product);
                 })
                 .toList();
 
@@ -100,7 +99,7 @@ public class OrderService {
         orderRepository.save(savedOrder);
 
         // cart 업데이트
-        cartRepository.deleteAll();
+        cartRepository.deleteAllByMemberId(orderRequest.memberId());
 
         return savedOrder.getId();
     }

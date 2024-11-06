@@ -32,14 +32,8 @@ public class Orders {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false)
-    private Integer zonecode;
-
     @Column(nullable = false, length = 100)
     private String address;
-
-    @Column(length = 50)
-    private String addressDetail;
 
     @OneToOne(mappedBy = "orders", cascade = CascadeType.ALL)
     private Pay pay;
@@ -56,13 +50,11 @@ public class Orders {
         this.status = status;
     }
 
-    public Orders(String orderThumbnail, String orderName, Pay pay, String addressDetail, String address, Integer zonecode, Member member, OrderStatus status, LocalDateTime orderTime) {
+    public Orders(String orderThumbnail, String orderName, Pay pay, String address, Member member, OrderStatus status, LocalDateTime orderTime) {
         this.orderThumbnail = orderThumbnail;
         this.orderName = orderName;
         this.pay = pay;
-        this.addressDetail = addressDetail;
         this.address = address;
-        this.zonecode = zonecode;
         this.member = member;
         this.status = status;
         this.orderTime = orderTime;

@@ -33,7 +33,7 @@ public class OrderController {
 
     @PostMapping("/save")
     public ResponseEntity<Long> createOrder(@RequestBody @Valid final OrderRequest request) {
-        final Long createdId = orderService.create(request, request.memberId());
+        final Long createdId = orderService.create(request);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
     }
 
