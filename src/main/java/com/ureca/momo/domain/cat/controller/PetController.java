@@ -17,7 +17,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(value = "/api/pets", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PetController {
 

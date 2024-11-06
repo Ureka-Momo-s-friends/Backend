@@ -4,14 +4,15 @@ import com.ureca.momo.domain.pay.model.Pay;
 import com.ureca.momo.domain.pay.repository.PayRepository;
 import com.ureca.momo.domain.pay.service.PayService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(value = "/api/pays", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PayController {

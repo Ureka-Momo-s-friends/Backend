@@ -30,9 +30,6 @@ public class Product {
     @Column(length = 1000)
     private String detail;
 
-    @Column(length = 500)
-    private String detailImage;
-
     @Enumerated(EnumType.STRING)
     private Category category;
 

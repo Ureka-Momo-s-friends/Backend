@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(value = "/api/carts", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CartController {
 
@@ -38,10 +37,10 @@ public class CartController {
 
     // 장바구니 내 품목 수량 업데이트
     @PutMapping("/{id}")
-    public ResponseEntity<Long> updateCart(@PathVariable(name = "id") final Long id,
+    public ResponseEntity<Void> updateCart(@PathVariable(name = "id") final Long id,
             @RequestBody @Valid Integer number) {
         cartService.update(id, number);
-        return ResponseEntity.ok(id);
+        return ResponseEntity.noContent().build();
     }
 
     // 장바구니 내 품목 삭제
