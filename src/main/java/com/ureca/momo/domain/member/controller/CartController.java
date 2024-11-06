@@ -21,7 +21,7 @@ public class CartController {
 
     // 특정 회원의 cart 전체 조회
     @GetMapping("/{memberId}")
-    public ResponseEntity<List<CartResponse>> getCart(@PathVariable final Long memberId) {
+    public ResponseEntity<List<CartResponse>> getCart(@PathVariable("memberId") final Long memberId) {
         return ResponseEntity.ok(cartService.get(memberId));
     }
 
@@ -29,7 +29,7 @@ public class CartController {
     @PostMapping("/{memberId}")
     public ResponseEntity<Long> createCart(
             @RequestBody @Valid final CartRequest request,
-            @PathVariable final Long memberId
+            @PathVariable("memberId") final Long memberId
     ) {
         final Long createdId = cartService.create(request, memberId);
         return new ResponseEntity<>(createdId, HttpStatus.CREATED);
