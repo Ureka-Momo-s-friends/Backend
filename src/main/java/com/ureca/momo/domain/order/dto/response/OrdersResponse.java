@@ -12,7 +12,8 @@ public record OrdersResponse(
         String orderName,
         String orderThumbnail,
         OrderStatus orderStatus,
-        Integer amount  //금액 추가
+        Integer amount,  //금액 추가
+        String address
 ) {
     public static OrdersResponse of(final Orders orders) {
         return new OrdersResponse(
@@ -21,7 +22,8 @@ public record OrdersResponse(
                 orders.getOrderName(),
                 orders.getOrderThumbnail(),
                 orders.getStatus(),
-                orders.getPay() != null ? orders.getPay().getAmount() : 0 // Pay 엔티티에서 금액 가져오기
+                orders.getPay() != null ? orders.getPay().getAmount() : 0, // Pay 엔티티에서 금액 가져오기
+                orders.getAddress()
         );
     }
 }
